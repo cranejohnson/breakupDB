@@ -12,11 +12,11 @@
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="http://highcharts.github.io/export-csv/export-csv.js"></script>
-    <script src="../resources/js/jquery.optionTree.js"></script>
-    <script src="../resources/js/simple_statistics.js"></script>
+    <script src="resources/js/jquery.optionTree.js"></script>
+    <script src="resources/js/simple_statistics.js"></script>
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.js"></script>
-    <script src= "../resources/js/sorttable.js"></script>
-    <script src="../resources/js/highcharts_reg.js"> </script>
+    <script src= "resources/js/sorttable.js"></script>
+    <script src="resources/js/highcharts_reg.js"> </script>
 
 
 
@@ -191,7 +191,42 @@
         console.log(breakupData['hdata']);
         createChart();
         updatePage(breakupData);
+        var dataTable = createTable(allData[site]);
+
+        $(document.body).append(dataTable);
         }
+
+    function createTable(data){
+        var table = $("<table id='datatable' class='sortable'></table>");
+        var head = $("<thead></thead>");
+        head.append("<tr><th>River</th><th>Location</th><th>Year</th><th>Breakup Date</th><th>Ice Moved</th><th>First Boat</th><th>Un-safe Person</th><th>Unsafe Vehicle</th><th>Last Ice</th><th>Remarks</th></tr>");
+        table.append(head);
+
+        var river = data.river;
+        var location = data.location;
+        var body = $("<tbody></tbody>");
+
+        $.each(data.data, function(idx, year) {
+
+            var row = $("<tr></tr>");
+            row.append($("<td></td>").html(river));
+            row.append($("<td></td>").html(location));
+            row.append($("<td></td>").html(idx));
+            row.append($("<td></td>").html(year.breakup));
+            row.append($("<td></td>").html(year.icemoved));
+            row.append($("<td></td>").html(year.firstboat));
+            row.append($("<td></td>").html(year.unsafeman));
+            row.append($("<td></td>").html(year.unsafeveh));
+            row.append($("<td></td>").html(year.lastice));
+            row.append($("<td></td>").html(year.remarks));
+            body.append(row);
+        });
+        table.append(body);
+
+    return table;
+    }
+
+
 
 
 
@@ -461,33 +496,7 @@
     </table>
 
     <h2>Breakup Dates Table</h2>
-    <table id="datatable" class="sortable">
-      <thead>
-        <tr><th>River</th><th>Location</th><th>Year</th><th>Breakup Date</th><th>Ice Moved</th><th>First Boat</th><th>Un-safe Person</th><th>Unsafe Vehicle</th><th>Vehicle Type</th><th>Last Ice</th><th>Remarks</th></tr>
-      </thead>
-      <tbody>
-        <?php
- //          foreach($riverList as $id){
-//               $river = $siteData[$id]['river'];
-//               $location = $siteData[$id]['location'];
-// 			  foreach($siteData[$id]['data'] as $year=>$sdata){
-//
-// 					echo "<tr><td>".$river."</td>";
-// 					echo "<td>".$location."</td>";
-// 					echo "<td>$year</td><td>".$sdata['breakup']."</td>";
-// 					echo "<td>".$sdata['icemoved']."</td>";
-// 					echo "<td>".$sdata['firstboat']."</td>";
-// 					echo "<td>".$sdata['unsafeman']."</td>";
-// 					echo "<td>".$sdata['unsafeveh']."</td>";
-// 					echo "<td>".$sdata['typeveh']."</td>";
-// 					echo "<td>".$sdata['lastice']."</td>";
-// 					echo "<td>".$sdata['remarks']."</td>";
-// 					echo "</tr>";
-// 			  }
-// 			}
-          ?>
-      </tbody>
-    </table>
+
    </div>
 
 
