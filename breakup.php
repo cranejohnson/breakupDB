@@ -1,16 +1,15 @@
-<?
+<?php
 
-
-
-/* Include config file for paths etc..... */
-require_once('../config.inc.php');
 
 
 /**
  * Include Web Function Library
  */
 
+
+require_once("/usr/local/apps/scripts/bcj/hydroTools/config.inc.php");
 require_once(RESOURCES_DIRECTORY."web_functions.php");
+
 
 $mysqli->select_db("aprfc");
 
@@ -183,4 +182,4 @@ function get_all_avg_dates($from,$to,$mysqli){
 
 }
 
-
+?>
