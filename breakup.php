@@ -94,34 +94,15 @@ foreach($option_tree as $region => $rivers){
 file_put_contents('breakupMenu.json',json_encode($option_tree));
 
 
-
-//$riverList = array();
-
-// #If this is a river table, build a list of location ID's from that river
-// if(preg_match('/(.+)\sTable/',$_GET['riverOption'],$matches)){
-// 		$query = "SELECT id FROM breakupSites where river = '$matches[1]'";
-// 	$result = $mysqli->query($query) or die($mysqli->error);
-// 	while($row = $result->fetch_array()){
-// 		$riverList[] = $row['id'];
-// 	}
-//
-// }
-//
-// preg_match('/\(ID:(.+)\)/',$_GET['riverOption'],$matches);
-//
-// if(count($matches[1])) $riverList = array($matches[1]);
-
-
-
-//Get the breakup information from database and populate the object
-#foreach($riverList as $id){
-$query = "select * from breakupdata left join breakupSites on breakupdata.siteID = breakupSites.id order by siteID,year";
-//$query = "select * from breakupdata where year > 1800 order by siteID,year asc";
+$query = "select dayofyear(breakup) as breakupDay,river,atnr,location,firstboat,unsafeman,unsafeveh,lastice,icemoved,remarks,breakup,siteID,year from breakupdata left join breakupSites on breakupdata.siteID = breakupSites.id order by siteID,year";
 
 $result = $mysqli->query($query) or die($mysqli->error);
 
-#$siteData[row['siteID']]['data'] = array();
+
 while($row = $result->fetch_array()){
+
+    //Need to handle dates before 1900 for php verion <= 5.2
+    
 
     $siteData[$row['siteID']]['name'] = $row['river']." ".$row['atnr']." ".$row['location'];
     $siteData[$row['siteID']]['river'] = $row['river'];
@@ -132,10 +113,11 @@ while($row = $result->fetch_array()){
     $siteData[$row['siteID']]['data'][$row['year']]['lastice']  = formatDate($row['lastice']);
     $siteData[$row['siteID']]['data'][$row['year']]['icemoved']  = formatDate($row['icemoved']);
     $siteData[$row['siteID']]['data'][$row['year']]['remarks']=   $row['remarks'];
-    $siteData[$row['siteID']]['data'][$row['year']]['jday'] = date('z',strtotime($row['breakup']))+1;
+    #$siteData[$row['siteID']]['data'][$row['year']]['jday'] = date('z',strtotime($row['breakup']))+1;
+    $siteData[$row['siteID']]['data'][$row['year']]['jday'] =$row['breakupDay'];
     $siteData[$row['siteID']]['data'][$row['year']]['breakup'] = $row['breakup'];
     if(isset($row['breakup'])){
-        $siteData[$row['siteID']]['hdata'][]= array((int)$row['year'],(int)(1+date('z',strtotime($row['breakup']))));
+        $siteData[$row['siteID']]['hdata'][]= array((int)$row['year'],(int)($row['breakupDay']));
     }
 }
 #}
