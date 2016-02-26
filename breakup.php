@@ -1,6 +1,19 @@
 <?php
 
-
+/**
+ * Description: This script creates two JSON data files, one for a menu
+ * and the second one with breakup data.  The JSON files are used as input
+ * to an html page which plots the data via javascript.
+ * Normally this script will be run daily to generate updated JSON files for
+ * web disply.  
+ *
+ * It can also be run from a browser to output a table of average breakup dates
+ * breakup.php?t&s=1980&e=2016
+ *
+ 
+ * @author Crane Johnson <benjamin.johnson@noaa.gov>
+ * @version 0.1
+ */
 
 /**
  * Include Web Function Library
@@ -10,11 +23,11 @@
 require_once("/usr/local/apps/scripts/bcj/hydroTools/config.inc.php");
 require_once(RESOURCES_DIRECTORY."web_functions.php");
 
-
+//Set the database
 $mysqli->select_db("aprfc");
 
-
-$opts = getoptreq('s:e:', array());
+//Optional arguments for calculating average breakup dates over a range of years
+$opts = getoptreq('s:e:t', array());
 
 if(isset($opts["s"])){
     $start =  $opts['s'];
@@ -30,6 +43,12 @@ else{
     $end = date('Y',time());
 }
 
+if(isset($opts["t"])){
+    $table = true;
+}
+else{
+    $table = false;
+}
 
 function formatDate($date){
 	if($date){
@@ -124,7 +143,7 @@ while($row = $result->fetch_array()){
 
 file_put_contents('breakupData.json',json_encode($siteData));
 
-get_all_avg_dates(1980,2016,$mysqli);
+if ($table) get_all_avg_dates(1980,2016,$mysqli);
 
 function get_all_avg_dates($from,$to,$mysqli){
     echo"<h2>Temp Table 1980-2015</h2>";
