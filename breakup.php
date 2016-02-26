@@ -110,19 +110,17 @@ foreach($option_tree as $region => $rivers){
 	}
 }
 
+//Save the menu data to a JSON file
 file_put_contents('breakupMenu.json',json_encode($option_tree));
 
 
+
+//Start working on created the breakup data JSON file
 $query = "select dayofyear(breakup) as breakupDay,river,atnr,location,firstboat,unsafeman,unsafeveh,lastice,icemoved,remarks,breakup,siteID,year from breakupdata left join breakupSites on breakupdata.siteID = breakupSites.id order by siteID,year";
-
 $result = $mysqli->query($query) or die($mysqli->error);
-
-
 while($row = $result->fetch_array()){
-
-    //Need to handle dates before 1900 for php verion <= 5.2
     
-
+    //Build the json structure from the query
     $siteData[$row['siteID']]['name'] = $row['river']." ".$row['atnr']." ".$row['location'];
     $siteData[$row['siteID']]['river'] = $row['river'];
     $siteData[$row['siteID']]['location'] = $row['location'];
@@ -132,17 +130,20 @@ while($row = $result->fetch_array()){
     $siteData[$row['siteID']]['data'][$row['year']]['lastice']  = formatDate($row['lastice']);
     $siteData[$row['siteID']]['data'][$row['year']]['icemoved']  = formatDate($row['icemoved']);
     $siteData[$row['siteID']]['data'][$row['year']]['remarks']=   $row['remarks'];
-    #$siteData[$row['siteID']]['data'][$row['year']]['jday'] = date('z',strtotime($row['breakup']))+1;
+   
     $siteData[$row['siteID']]['data'][$row['year']]['jday'] =$row['breakupDay'];
     $siteData[$row['siteID']]['data'][$row['year']]['breakup'] = $row['breakup'];
-    if(isset($row['breakup'])){
+    //Create a separate array that has paired (year,julianDay) for plotting
+   if(isset($row['breakup'])){
         $siteData[$row['siteID']]['hdata'][]= array((int)$row['year'],(int)($row['breakupDay']));
     }
 }
-#}
+
 
 file_put_contents('breakupData.json',json_encode($siteData));
 
+
+//If an average dates table was requested display this back to the browser.
 if ($table) get_all_avg_dates(1980,2016,$mysqli);
 
 function get_all_avg_dates($from,$to,$mysqli){
