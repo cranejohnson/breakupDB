@@ -12,11 +12,16 @@
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="http://highcharts.github.io/export-csv/export-csv.js"></script>
-    <script src="resources/js/jquery.optionTree.js"></script>
-    <script src="resources/js/simple_statistics.js"></script>
+    
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.js"></script>
-    <script src= "resources/js/sorttable.js"></script>
-   
+    <!--<script src= "resources/js/sorttable.js"></script>-->
+    <!--<script src="resources/js/simple_statistics.js"></script>-->
+    <!--<script src="resources/js/jquery.optionTree.js"></script>-->
+    <script src=  "http://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.0/simple_statistics.min.js"></script>
+    <script src= "http://kotowicz.net/jquery-option-tree/jquery.optionTree.js"></script>
+    <script src= "http://aprfc.arh.noaa.gov/javascript/highcharts_reg.js"></script>
+
 
 
 
@@ -28,7 +33,8 @@
 	 	}
 	 	else{
 			data = getStatsData(data);
-			var stats = new Array(ss.min(data),(ss.mean(data)-ss.standard_deviation(data)),ss.mean(data),(ss.mean(data)+ss.standard_deviation(data)),ss.max(data));
+//			var stats = new Array(ss.min(data),(ss.mean(data)-ss.standard_deviation(data)),ss.mean(data),(ss.mean(data)+ss.standard_deviation(data)),ss.max(data));
+			var stats = new Array(ss.min(data),(ss.mean(data)-ss.sampleStandardDeviation(data)),ss.mean(data),(ss.mean(data)+ss.sampleStandardDeviation(data)),ss.max(data));
 			return stats;
 		}
 	}
@@ -42,6 +48,7 @@
 					series.push(data[i]);
 				 }
 			}
+           
 			return series;
 		}
 	}
@@ -145,8 +152,8 @@
     	var xMean = 0;
     	var sumXi = 0;
     	var tScore = 0;
-        var slope = ss.linear_regression().data(data).m().toFixed(2);
-    	var line = ss.linear_regression().data(data).line();
+        var slope = ss.linearRegression(data).m.toFixed(2);
+    	var line = ss.linearRegressionLine(ss.linearRegression(data));
 		for (i = 0; i < data.length; i++) {
 			xArray.push(data[i][0]);
 		}
@@ -179,7 +186,7 @@
         if(breakupData['statsSeries'] && breakupData['statsSeries'].length) breakupData['stats'] = new Array(getStats(breakupData['statsSeries'],ss));
 
         if ('undefined' !== typeof breakupData['statsSeries']) {
-            breakupData['slope'] = ss.linear_regression().data(breakupData['statsSeries']).m().toFixed(2);
+            breakupData['slope'] = ss.linearRegression(breakupData['statsSeries']).m.toFixed(2);
         }
         sigTrend = testSig(breakupData['statsSeries'],ss);
 
@@ -188,7 +195,7 @@
         }else{
             breakupData['plotStyle']= 'Solid';
         }
-        console.log(breakupData['hdata']);
+        
         createChart();
         updatePage(breakupData);
         var dataTable = createTable(allData[site]);
@@ -323,7 +330,7 @@
 							breakupData['stats'] = Array(getStats(breakupData['statsSeries'],ss));
 							updatePage(breakupData);
 							if ('undefined' !== typeof breakupData['statsSeries']) {
-                                breakupData['slope'] = ss.linear_regression().data(breakupData['statsSeries']).m().toFixed(2);
+                                breakupData['slope'] = ss.linearRegression(breakupData['statsSeries']).m.toFixed(2);
                             }
 					    	sigTrend = testSig(breakupData['statsSeries'],ss);
                             if(!sigTrend) {
@@ -374,7 +381,7 @@
 								breakupData['statsSeries'] = getStatsSeries(breakupData['data'],breakupData['startYear'],breakupData['endYear']);
 								breakupData['stats'] = Array(getStats(breakupData['statsSeries'],ss));
 								updatePage(breakupData);
-								breakupData['slope'] = ss.linear_regression().data(breakupData['statsSeries']).m().toFixed(2);
+								breakupData['slope'] = ss.linearRegression(breakupData['statsSeries']).m.toFixed(2);
 								sigTrend = testSig(breakupData['statsSeries'],ss);
                                 if(!sigTrend) {
                                     breakupData['plotStyle'] = 'Dot';
@@ -405,7 +412,7 @@
 			{
 				showInLegend: false,
 				regression: true ,
-				name: 'Shaded Area Tend',
+				name: 'Shaded Area Trend',
 				regressionSettings: {
 					type: 'linear',
                     dashStyle: breakupData['plotStyle'],
@@ -415,6 +422,7 @@
 				},
 				data: breakupData['statsSeries'],
 				type: 'scatter',
+                
 				marker: {
 					enabled: false
 				}
@@ -446,7 +454,7 @@
 
 			var $text =  'No Significant Trend'
 			if(sigTrend) $text = 'Significant Trend'
-			chart.renderer.text($text, 550, 40)
+			chart.renderer.text($text, 450, 40)
 			 .css({
 				color: '#4572A7',
 				fontSize: '18px'
@@ -471,10 +479,10 @@
     <table>
       <tr>
         <td>
-          <div id="container" style="height: 400px; width: 800px"></div>
+          <div id="container" style="height: 400px; width: 700px"></div>
           <i>Statistically significant trends evaluated using the t-test at the 95% confidence level.</i>
         </td>
-        <td style="width: 200px">
+        <td style="width: 180px">
         <div id = 'report'></div>
 
           <i>Click on the chart to select a different date range.</i><br>
