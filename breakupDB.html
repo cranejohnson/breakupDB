@@ -200,7 +200,7 @@
         updatePage(breakupData);
         var dataTable = createTable(allData[site]);
 
-        $(document.body).append(dataTable);
+        $("#dateTable").html(dataTable);
         }
 
     function createTable(data){
@@ -504,7 +504,7 @@
     </table>
 
     <h2>Breakup Dates Table</h2>
-
+   <div id="dateTable"> </div>
    </div>
 
 
