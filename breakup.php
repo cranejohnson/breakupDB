@@ -5,7 +5,7 @@
  * and the second one with breakup data.  The JSON files are used as input
  * to an html page which plots the data via javascript.
  * Normally this script will be run daily to generate updated JSON files for
- * web disply.  
+ * web display.  
  *
  * It can also be run from a browser to output a table of average breakup dates
  * breakup.php?t&s=1980&e=2016
@@ -110,8 +110,11 @@ foreach($option_tree as $region => $rivers){
 	}
 }
 
+
 //Save the menu data to a JSON file
 file_put_contents('breakupMenu.json',json_encode($option_tree));
+file_put_contents('cms_publicdata+breakupMenu.json',json_encode($option_tree));
+
 
 
 
@@ -141,6 +144,7 @@ while($row = $result->fetch_array()){
 
 
 file_put_contents('breakupData.json',json_encode($siteData));
+file_put_contents('cms_publicdata+breakupData.json',json_encode($siteData));
 
 
 //If an average dates table was requested display this back to the browser.
