@@ -10,6 +10,9 @@
 
 #$db = new mysqli($host,$user,$pwd,$db);
 
+//Push the breakup data out to JSON files for public use
+require_once('/hd1apps/data/intranet/html/tools/breakupDB/breakup.php');
+
 require_once('/hd1apps/data/intranet/html/private/adminconnecti.php');
 $mysqli->select_db("aprfc");
 
