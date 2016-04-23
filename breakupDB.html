@@ -12,7 +12,7 @@
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="http://highcharts.github.io/export-csv/export-csv.js"></script>
-    
+
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.js"></script>
     <!--<script src= "resources/js/sorttable.js"></script>-->
     <!--<script src="resources/js/simple_statistics.js"></script>-->
@@ -27,13 +27,13 @@
 
     <script>
 
+    //Get stats from data and return array(min,bottomofbox,mean,topofbox,max)
 	function getStats(data,ss) {
 	 	if (typeof data === 'undefined'){
 	 		return;
 	 	}
 	 	else{
 			data = getStatsData(data);
-//			var stats = new Array(ss.min(data),(ss.mean(data)-ss.standard_deviation(data)),ss.mean(data),(ss.mean(data)+ss.standard_deviation(data)),ss.max(data));
 			var stats = new Array(ss.min(data),(ss.mean(data)-ss.sampleStandardDeviation(data)),ss.mean(data),(ss.mean(data)+ss.sampleStandardDeviation(data)),ss.max(data));
 			return stats;
 		}
@@ -48,7 +48,7 @@
 					series.push(data[i]);
 				 }
 			}
-           
+
 			return series;
 		}
 	}
@@ -65,6 +65,7 @@
 	}
 
 
+    //Load states into webpage elements
 	function loadPageStats(stats){
 	    if(stats[1]){
 			var max = moment("2013-12-31").add(stats[4], 'days');
@@ -83,6 +84,7 @@
 		}
 	}
 
+    //Update the page with new data
     function updatePage(data){
 		$('#start').html(data['startYear']);
 		$('#end').html(data['endYear']);
@@ -95,6 +97,7 @@
         }
 
     }
+
 
    $(function() {
         var options = {
@@ -195,13 +198,14 @@
         }else{
             breakupData['plotStyle']= 'Solid';
         }
-        
+
         createChart();
         updatePage(breakupData);
         var dataTable = createTable(allData[site]);
 
         $("#dateTable").html(dataTable);
         }
+
 
     function createTable(data){
         var table = $("<table id='datatable' class='sortable'></table>");
@@ -422,7 +426,7 @@
 				},
 				data: breakupData['statsSeries'],
 				type: 'scatter',
-                
+
 				marker: {
 					enabled: false
 				}
