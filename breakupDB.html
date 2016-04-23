@@ -27,6 +27,17 @@
 
     <script>
 
+
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
     //Get stats from data and return array(min,bottomofbox,mean,topofbox,max)
 	function getStats(data,ss) {
 	 	if (typeof data === 'undefined'){
@@ -100,6 +111,8 @@
 
 
    $(function() {
+        site = getParameterByName('site');
+        console.log(site);
         var options = {
                 choose: function(level) {
                     switch(level){
@@ -118,14 +131,19 @@
         }; // value for default option (include field name)
         $.getJSON('breakupData.json', function(data) { // initialize the tree by loading the file first
             allData = data;
+            if(site != null){
+                loadSite(site);
+            }
         });
 
         $.getJSON('breakupMenu.json', function(tree) { // initialize the tree by loading the file first
 	        $('input[name=riverOption]').optionTree(tree,options).change(function(){
 	            site = this.value.match(/ID:([0-9]*)/)[1];
+	            console.log(site);
 	            loadSite(site);
 	         });
         });
+
     });
 
 
@@ -204,6 +222,8 @@
         var dataTable = createTable(allData[site]);
 
         $("#dateTable").html(dataTable);
+        $('#directLink').html('<a href="'+window.location.href+'?site='+site+'">Direct Link to Site</a>');
+
         }
 
 
@@ -501,13 +521,16 @@
                 <tr><td>Std. Dev.</td><td><div id = 'stddev'></div> days</td></tr>
             </tbody>
           </table>
+          <div style='text-align:center;'>
+          <i >Click on a datapoint to remove it from the statistical calculation</i>
+          <div id="directLink"></div>
+          </div>
 
-          <i>Click on a datapoint to remove it from the statistical calculation</i>
         </td>
       </tr>
     </table>
 
-    <h2>Breakup Dates Table</h2>
+   <h2>Breakup Dates Table</h2>
    <div id="dateTable"> </div>
    </div>
 
