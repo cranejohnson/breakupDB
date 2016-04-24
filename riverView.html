@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>riverView.html</title>
+	<meta name="generator" content="BBEdit 10.5" />
+
+	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://highcharts.github.io/export-csv/export-csv.js"></script>
+
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.js"></script>
+    <!--<script src= "resources/js/sorttable.js"></script>-->
+    <!--<script src="resources/js/simple_statistics.js"></script>-->
+    <!--<script src="resources/js/jquery.optionTree.js"></script>-->
+    <script src=  "http://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.0/simple_statistics.min.js"></script>
+    <script src= "http://kotowicz.net/jquery-option-tree/jquery.optionTree.js"></script>
+    <script src= "http://aprfc.arh.noaa.gov/javascript/highcharts_reg.js"></script>
+
+
+    <script>
+
+    jQuery.fn.exists = function(){return this.length>0;}
+
+    //Extract the series to use for statistics based on a min and max year
+	function getStatsSeries(data,minyear,maxyear,ignore){
+	    ignore = ignore || 0;
+		if(data && data.length){
+			var series = new Array();
+			for (i = 0; i < data.length; i++) {
+				 if((data[i][0] >= minyear) && (data[i][0]<= maxyear)){
+				    if(data[i][0] != ignore) series.push(data[i]);
+				 }
+			}
+
+			return series;
+		}
+	}
+
+    //Takes series [[x,y],[x2,y2]...] and returns [y1,y2....]
+	function getStatsData(data){
+		var series = new Array();
+		for (i = 0; i < data.length; i++) {
+                //Add 0.5 to julian day (assume breakup mid day for stats calculation)
+                jday = data[i][1]+0.5;
+				series.push(jday);
+		}
+		return series;
+	}
+
+    //Get stats from data and return array(min,bottomofbox,mean,topofbox,max)
+	function getStats(data,ss) {
+	 	if (typeof data === 'undefined'){
+	 		return;
+	 	}
+	 	else{
+			data = getStatsData(data);
+			var min = ss.min(data);
+			var max = ss.max(data);
+			var median = ss.median(data);
+			var range = ss.interquartileRange(data);
+			var lowerq = median - range/2;
+			var upperq = median + range/2;
+//			var stats = new Array(ss.min(data),(ss.mean(data)-ss.sampleStandardDeviation(data)),ss.mean(data),(ss.mean(data)+ss.sampleStandardDeviation(data)),ss.max(data));
+            var stats = new Array(min,lowerq,median,upperq,max);
+			return stats;
+		}
+	}
+
+
+    var rivers = {
+        "kuskokwim" : {
+            "locations":[281,276,286,285,284,273,270,274,288,269,271,278],
+            "name": "Kuskokwim River"
+            }
+        }
+
+    var allData = new Array();
+    var riverData = new Array();
+    var compareYear = new Array();
+    var year = 2015;
+    var siteNames= new Array();
+    var startYear = 1980;
+    var endYear = 2015;
+    var riverName = rivers['kuskokwim']['name']
+
+
+    function loadChart() {
+
+        siteNames = [];
+        compareYear = [];
+        riverData = [];
+
+        startYear = $("#startyear").val();
+        endYear = $("#endyear").val();
+        year = $("#studyyear").val();
+        $("#container").width($("#width").val());
+        $("#container").height($("#height").val());
+
+        $.getJSON('breakupData.json', function(data) { // initialize the tree by loading the file first
+            allData = data;
+            for (index = 0; index < rivers.kuskokwim.locations.length; ++index) {
+                var site =  rivers.kuskokwim.locations[index];
+                if(year == endYear){
+                    var series = getStatsSeries(allData[site]['hdata'],startYear,endYear,year);
+                }
+                else{
+                    var series = getStatsSeries(allData[site]['hdata'],startYear,endYear);
+                }
+
+                riverData.push(getStats(series,ss));
+                siteNames.push(allData[site]['location']);
+                if (typeof allData[site]['data'][year.toString()] !== 'undefined'){
+                    compareYear.push([index,parseInt(allData[site]['data'][year.toString()]['jday'])]);
+                }
+                else{
+                    compareYear.push('null');
+                }
+
+            }
+            createChart();
+        });
+    }
+
+    function updateChart(year){
+        compareYear = [];
+        for (index = 0; index < rivers.kuskokwim.locations.length; ++index) {
+            var site =  rivers.kuskokwim.locations[index];
+            if (typeof allData[site]['data'][year.toString()] !== 'undefined'){
+                compareYear.push([index,parseInt(allData[site]['data'][year.toString()]['jday'])]);
+            }
+            else{
+                compareYear.push(null);
+            }
+        }
+        return compareYear;
+     }
+
+$(document).keydown(function(e) {
+    switch(e.which) {
+        case 37: // left
+            var down = (parseInt(year)-1).toString();
+            $("#studyyear").val(down);
+            year = year -1;
+            var chart = $('#container').highcharts();
+            chart.series[1].setData(updateChart(year));
+        break;
+        case 39: // right
+           var up = (parseInt(year)+1).toString();
+            $("#studyyear").val(up);
+            year = year +1;
+            var chart = $('#container').highcharts();
+            chart.series[1].setData(updateChart(year));
+
+        break;
+        default: return; // exit this handler for other keys
+    }
+    e.preventDefault(); // prevent the default action (scroll / move caret)
+});
+
+    function createChart() {
+		chart = new Highcharts.Chart({
+            chart: {
+                type: 'boxplot',
+                renderTo: 'container',
+                animation: false
+            },
+
+            title: {
+                text: 'Breakup Dates on the '+riverName
+            },
+            credits: {
+                enabled: false
+            },
+
+            legend: {
+                enabled: true
+            },
+
+            xAxis: {
+                categories: siteNames,
+                labels: {
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize:'13px'
+
+                    }
+                }
+
+            },
+
+            yAxis: {
+				labels: {
+					formatter: function() {
+						return Highcharts.dateFormat('%b %e', ((this.value-1)*86400*1000));
+					},
+					style: {
+                        fontWeight: 'bold',
+                        fontSize:'13px'
+
+                    }
+				},
+				tickInterval : 7,
+				title: {
+					text: 'Breakup Date',
+					style: {
+                        fontWeight: 'bold',
+                        fontSize:'15px'
+
+                    }
+				}
+			},
+			plotOptions: {
+                boxplot: {
+                    fillColor: '#F0F0E0',
+                    lineWidth: 2,
+                    medianColor: '#0C5DA5',
+                    medianWidth: 3,
+                    //stemColor: '#A63400',
+                    stemDashStyle: 'dash',
+                    stemWidth: 2,
+                    //whiskerColor: '#3D9200',
+                    whiskerLength: '50%',
+                    whiskerWidth: 2
+                }
+            },
+
+
+            series: [{
+                name: 'Breakup Dates',
+                data: riverData,
+                tooltip: {
+                    pointFormatter: function() {
+
+						return "Latest: "+Highcharts.dateFormat('%b %e', ((this.high-1)*86400*1000))+"<br/>"+
+						"Q3: "+Highcharts.dateFormat('%b %e', ((this.q3-1)*86400*1000))+"<br/>"+
+						"Median: "+Highcharts.dateFormat('%b %e', ((this.median-1)*86400*1000))+"<br/>"+
+						"Q1:"+Highcharts.dateFormat('%b %e', ((this.q1-1)*86400*1000))+"<br/>"+
+						"Earliest: "+Highcharts.dateFormat('%b %e', ((this.low-1)*86400*1000))+"<br/>";
+					}
+                }
+                }, {
+                name: year.toString(),
+                color: Highcharts.getOptions().colors[0],
+                type: 'scatter',
+                data: compareYear,
+                marker: {
+                    fillColor: 'red'
+                },
+                tooltip: {
+                    pointFormatter: function() {
+						return Highcharts.dateFormat('%b %e', ((this.y-1)*86400*1000));
+					}
+                }
+            }]
+
+        });
+    }
+
+    </script>
+</head>
+<body>
+Start Year:  <input type="text" id="startyear" value="1980"><br>
+End Year:  <input type="text" id="endyear" value="2016"><br>
+Study Year: <input type="text" id="studyyear" value="2015"><br>
+Width: <input type="text" id="width" value="700"><br>
+Height: <input type="text" id="height" value="450"><br>
+<button id="updateGraph">Update</button>
+
+
+<div id="container" style="height: 400px; margin: auto; width: 600px"></div>
+</body>
+<script>
+$(function() {
+  loadChart();
+  $("#updateGraph").click(function() {
+
+        loadChart();
+    });
+});
+</script>
+</html>
