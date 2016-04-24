@@ -105,7 +105,7 @@
         year = $("#studyyear").val();
         $(".iceGraph").width($("#width").val());
         $(".iceGraph").height($("#height").val());
-
+        
         $.each( rivers,function( key, value ) {
             riverData = [];
             siteNames = [];
@@ -113,12 +113,7 @@
             siteCount = [];
             for (index = 0; index < value.locations.length; ++index) {
                 var site =  value.locations[index];
-                if(year == endYear){
-                    var series = getStatsSeries(allData[site]['hdata'],startYear,endYear,year);
-                }
-                else{
-                    var series = getStatsSeries(allData[site]['hdata'],startYear,endYear);
-                }
+                var series = getStatsSeries(allData[site]['hdata'],startYear,endYear);
                 siteCount.push(series.length);
                 riverData.push(getStats(series,ss));
                 siteNames.push(allData[site]['location']+" ("+series.length+")");
@@ -155,7 +150,7 @@ $(document).keydown(function(e) {
         case 37: // left
             var down = (parseInt(year)-1).toString();
             $("#studyyear").val(down);
-            year = year -1;
+            year = parseInt(year) -1;
             $.each( rivers,function( key, value ) {
                 var chart = $('#'+key+'Container').highcharts();
                 chart.series[1].setData(updateChart(year,value));
@@ -165,7 +160,7 @@ $(document).keydown(function(e) {
         case 39: // right
            var up = (parseInt(year)+1).toString();
             $("#studyyear").val(up);
-            year = year +1;
+            year = parseInt(year) +1;
             $.each( rivers,function( key, value ) {
                 var chart = $('#'+key+'Container').highcharts();
                 chart.series[1].setData(updateChart(year,value));
