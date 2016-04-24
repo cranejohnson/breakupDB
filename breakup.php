@@ -151,7 +151,7 @@ chmod("cms_publicdata+breakupData.json", 0777);
 
 
 //If an average dates table was requested display this back to the browser.
-if ($table) get_all_avg_dates(1980,2016,$mysqli);
+if ($table) get_all_avg_dates(1980,$end,$mysqli);
 
 function get_all_avg_dates($from,$to,$mysqli){
     echo"<h2>Temp Table 1980-2015</h2>";
