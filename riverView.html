@@ -76,6 +76,10 @@
         "kuskokwim" : {
             "locations":[281,276,286,285,284,273,270,274,288,269,271,278],
             "name": "Kuskokwim River"
+            },
+        "yukon" : {
+            "locations":[468,469,465,472,494,491,475,480,478,471],
+            "name": "Yukon River"
             }
         }
 
@@ -84,36 +88,40 @@
     var compareYear = new Array();
     var year = 2015;
     var siteNames= new Array();
+    var siteCount = new Array();
     var startYear = 1980;
     var endYear = 2015;
     var riverName = rivers['kuskokwim']['name']
 
 
-    function loadChart() {
+    function loadCharts() {
 
         siteNames = [];
         compareYear = [];
-        riverData = [];
+
 
         startYear = $("#startyear").val();
         endYear = $("#endyear").val();
         year = $("#studyyear").val();
-        $("#container").width($("#width").val());
-        $("#container").height($("#height").val());
+        $(".iceGraph").width($("#width").val());
+        $(".iceGraph").height($("#height").val());
 
-        $.getJSON('breakupData.json', function(data) { // initialize the tree by loading the file first
-            allData = data;
-            for (index = 0; index < rivers.kuskokwim.locations.length; ++index) {
-                var site =  rivers.kuskokwim.locations[index];
+        $.each( rivers,function( key, value ) {
+            riverData = [];
+            siteNames = [];
+            compareYear = [];
+            siteCount = [];
+            for (index = 0; index < value.locations.length; ++index) {
+                var site =  value.locations[index];
                 if(year == endYear){
                     var series = getStatsSeries(allData[site]['hdata'],startYear,endYear,year);
                 }
                 else{
                     var series = getStatsSeries(allData[site]['hdata'],startYear,endYear);
                 }
-
+                siteCount.push(series.length);
                 riverData.push(getStats(series,ss));
-                siteNames.push(allData[site]['location']);
+                siteNames.push(allData[site]['location']+" ("+series.length+")");
                 if (typeof allData[site]['data'][year.toString()] !== 'undefined'){
                     compareYear.push([index,parseInt(allData[site]['data'][year.toString()]['jday'])]);
                 }
@@ -122,14 +130,16 @@
                 }
 
             }
-            createChart();
+        createChart(key);
         });
+
     }
 
-    function updateChart(year){
+    function updateChart(year,river){
+
         compareYear = [];
-        for (index = 0; index < rivers.kuskokwim.locations.length; ++index) {
-            var site =  rivers.kuskokwim.locations[index];
+        for (index = 0; index < river.locations.length; ++index) {
+            var site =  river.locations[index];
             if (typeof allData[site]['data'][year.toString()] !== 'undefined'){
                 compareYear.push([index,parseInt(allData[site]['data'][year.toString()]['jday'])]);
             }
@@ -146,32 +156,38 @@ $(document).keydown(function(e) {
             var down = (parseInt(year)-1).toString();
             $("#studyyear").val(down);
             year = year -1;
-            var chart = $('#container').highcharts();
-            chart.series[1].setData(updateChart(year));
+            $.each( rivers,function( key, value ) {
+                var chart = $('#'+key+'Container').highcharts();
+                chart.series[1].setData(updateChart(year,value));
+                chart.legend.allItems[1].update({name:year.toString()+' Breakup Date'});
+            });
         break;
         case 39: // right
            var up = (parseInt(year)+1).toString();
             $("#studyyear").val(up);
             year = year +1;
-            var chart = $('#container').highcharts();
-            chart.series[1].setData(updateChart(year));
-
+            $.each( rivers,function( key, value ) {
+                var chart = $('#'+key+'Container').highcharts();
+                chart.series[1].setData(updateChart(year,value));
+                chart.legend.allItems[1].update({name:year.toString()+' Breakup Date'});
+            });
         break;
         default: return; // exit this handler for other keys
     }
     e.preventDefault(); // prevent the default action (scroll / move caret)
 });
 
-    function createChart() {
+    function createChart(key) {
+        
 		chart = new Highcharts.Chart({
             chart: {
                 type: 'boxplot',
-                renderTo: 'container',
+                renderTo: key+'Container',
                 animation: false
             },
 
             title: {
-                text: 'Breakup Dates on the '+riverName
+                text: rivers[key].name+' Breakup Dates '+startYear+' - '+endYear
             },
             credits: {
                 enabled: false
@@ -244,7 +260,7 @@ $(document).keydown(function(e) {
 					}
                 }
                 }, {
-                name: year.toString(),
+                name: year.toString()+' Breakup Date',
                 color: Highcharts.getOptions().colors[0],
                 type: 'scatter',
                 data: compareYear,
@@ -264,22 +280,28 @@ $(document).keydown(function(e) {
     </script>
 </head>
 <body>
-Start Year:  <input type="text" id="startyear" value="1980"><br>
-End Year:  <input type="text" id="endyear" value="2016"><br>
-Study Year: <input type="text" id="studyyear" value="2015"><br>
+Normals Start Year:  <input type="text" id="startyear" value="1980"><br>
+Normals End Year:  <input type="text" id="endyear" value="2015"><br>
+Study Year: <input type="text" id="studyyear" value="2016"><br>
 Width: <input type="text" id="width" value="700"><br>
 Height: <input type="text" id="height" value="450"><br>
 <button id="updateGraph">Update</button>
+<h3>Use left and right arrows to toggle year to view.</h3>
 
 
-<div id="container" style="height: 400px; margin: auto; width: 600px"></div>
+<div id="kuskokwimContainer" class='iceGraph' style="height: 400px; margin: auto; width: 600px"></div>
+<div id="yukonContainer" class='iceGraph' style="height: 400px; margin: auto; width: 600px"></div>
 </body>
 <script>
 $(function() {
-  loadChart();
+   $.getJSON('breakupData.json', function(data) { // initialize the tree by loading the file first
+            allData = data;
+            loadCharts();
+   });
+
   $("#updateGraph").click(function() {
 
-        loadChart();
+        loadCharts();
     });
 });
 </script>
