@@ -45,7 +45,14 @@
 	 	}
 	 	else{
 			data = getStatsData(data);
-			var stats = new Array(ss.min(data),(ss.mean(data)-ss.sampleStandardDeviation(data)),ss.mean(data),(ss.mean(data)+ss.sampleStandardDeviation(data)),ss.max(data));
+			var min = ss.min(data);
+			var max = ss.max(data);
+			var median = ss.median(data);
+			var range = ss.interquartileRange(data);
+			var lowerq = median - range/2;
+			var upperq = median + range/2;
+//			var stats = new Array(ss.min(data),(ss.mean(data)-ss.sampleStandardDeviation(data)),ss.mean(data),(ss.mean(data)+ss.sampleStandardDeviation(data)),ss.max(data));
+            var stats = new Array(min,lowerq,median,upperq,max);
 			return stats;
 		}
 	}
@@ -516,9 +523,9 @@
                 <tr><td>End Year</td><td><div id = 'end'></div></td></tr>
                 <tr><td>Number</td><td><div id = 'numYears'></div></td></tr>
                 <tr><td>Min.</td><td><div id = 'min'></div></td></tr>
-                <tr><td>Avg.</td><td><div id = 'mean'></div></td></tr>
+                <tr><td>Median</td><td><div id = 'mean'></div></td></tr>
                 <tr><td>Max.</td><td><div id = 'max'></div></td></tr>
-                <tr><td>Std. Dev.</td><td><div id = 'stddev'></div> days</td></tr>
+                <tr><td>IQR</td><td><div id = 'stddev'></div> days</td></tr>
             </tbody>
           </table>
           <div style='text-align:center;'>
