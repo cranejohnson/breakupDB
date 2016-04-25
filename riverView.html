@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<title>riverView.html</title>
-	<meta name="generator" content="BBEdit 10.5" />
-
-	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+    <meta charset="utf-8" />
+    <title>riverView.html</title>
+    <meta name="generator" content="BBEdit 10.5" />
+    <script src="//code.jquery.com/jquery-1.9.1.js"></script>
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
@@ -101,14 +100,15 @@
     var late = {};
     var startYear = 1980;
     var endYear = 2015;
-
+    var graphWidth = 700;
+    var graphHieght = 450;
 
     function loadCharts() {
         startYear = $("#startyear").val();
         endYear = $("#endyear").val();
         year = $("#studyyear").val();
-        $(".iceGraph").width($("#width").val());
-        $(".iceGraph").height($("#height").val());
+        $(".iceGraph").width(graphWidth);
+        $(".iceGraph").height(graphHieght);
 
         $.each( rivers,function( key, value ) {
             riverData = [];
@@ -308,8 +308,6 @@ $(document).keydown(function(e) {
 Normals Start Year:  <input type="text" id="startyear" value="1980"><br>
 Normals End Year:  <input type="text" id="endyear" value="2015"><br>
 Study Year: <input type="text" id="studyyear" value="2016"><br>
-Width: <input type="text" id="width" value="700"><br>
-Height: <input type="text" id="height" value="450"><br>
 <button id="updateGraph">Update</button>
 <h3>Use left and right arrows to toggle year to view.</h3>
 
