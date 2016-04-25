@@ -148,8 +148,7 @@ file_put_contents('breakupData.json',json_encode($siteData));
 file_put_contents('cms_publicdata+breakupData.json',json_encode($siteData));
 chmod("breakupData.json", 0777);
 chmod("cms_publicdata+breakupData.json", 0777);
-exec('rsync -vxrt /hd1apps/data/intranet/html/tools/breakupDB/cms_publicdata+breakupData.json 10.251.3.37::nids_incoming_aprfc');
-exec('rsync -vxrt /hd1apps/data/intranet/html/tools/breakupDB/cms_publicdata+breakupMenu.json 10.251.3.37::nids_incoming_aprfc');
+
 
 
 //If an average dates table was requested display this back to the browser.
