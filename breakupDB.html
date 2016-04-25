@@ -75,8 +75,7 @@
 	function getStatsData(data){
 		var series = new Array();
 		for (i = 0; i < data.length; i++) {
-                //Add 0.5 to julian day (assume breakup mid day for stats calculation)
-                jday = data[i][1]+0.5;
+                jday = data[i][1];
 				series.push(jday);
 		}
 		return series;
