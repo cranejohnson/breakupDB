@@ -124,13 +124,13 @@
                 var stats= getStats(series,ss);
 
                 var result = $.grep(series, function(v,i) {
-                    return v[1]+0.5 === stats[0];
+                    return v[1] === stats[0];
                 });
                 early[key].push(getCol(result,0).join())
 
                 result = []
                 var result = $.grep(series, function(v,i) {
-                    return v[1]+0.5 === stats[4];
+                    return v[1] === stats[4];
                 });
                 late[key].push(getCol(result,0).join())
 
