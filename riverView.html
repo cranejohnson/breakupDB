@@ -26,6 +26,15 @@
 
     jQuery.fn.exists = function(){return this.length>0;}
 
+
+    function getCol(matrix, col){
+       var column = [];
+       for(var i=0; i<matrix.length; i++){
+          column.push(matrix[i][col]);
+       }
+       return column;
+    }
+
     //Extract the series to use for statistics based on a min and max year
 	function getStatsSeries(data,minyear,maxyear,ignore){
 	    ignore = ignore || 0;
@@ -89,33 +98,45 @@
     var year = 2015;
     var siteNames= new Array();
     var siteCount = new Array();
+    var early = {};
+    var late = {};
     var startYear = 1980;
     var endYear = 2015;
-    var riverName = rivers['kuskokwim']['name']
 
 
     function loadCharts() {
-
-        siteNames = [];
-        compareYear = [];
-
-
         startYear = $("#startyear").val();
         endYear = $("#endyear").val();
         year = $("#studyyear").val();
         $(".iceGraph").width($("#width").val());
         $(".iceGraph").height($("#height").val());
-        
+
         $.each( rivers,function( key, value ) {
             riverData = [];
             siteNames = [];
             compareYear = [];
             siteCount = [];
+            early[key]= new Array();
+            late[key]= new Array();
+
             for (index = 0; index < value.locations.length; ++index) {
                 var site =  value.locations[index];
                 var series = getStatsSeries(allData[site]['hdata'],startYear,endYear);
+                var stats= getStats(series,ss);
+
+                var result = $.grep(series, function(v,i) {
+                    return v[1]+0.5 === stats[0];
+                });
+                early[key].push(getCol(result,0).join())
+
+                result = []
+                var result = $.grep(series, function(v,i) {
+                    return v[1]+0.5 === stats[4];
+                });
+                late[key].push(getCol(result,0).join())
+
                 siteCount.push(series.length);
-                riverData.push(getStats(series,ss));
+                riverData.push(stats);
                 siteNames.push(allData[site]['location']+" ("+series.length+")");
                 if (typeof allData[site]['data'][year.toString()] !== 'undefined'){
                     compareYear.push([index,parseInt(allData[site]['data'][year.toString()]['jday'])]);
@@ -173,7 +194,7 @@ $(document).keydown(function(e) {
 });
 
     function createChart(key) {
-        
+
 		chart = new Highcharts.Chart({
             chart: {
                 type: 'boxplot',
@@ -236,22 +257,32 @@ $(document).keydown(function(e) {
                     stemWidth: 2,
                     //whiskerColor: '#3D9200',
                     whiskerLength: '50%',
-                    whiskerWidth: 2
-                }
+                    whiskerWidth: 2,
+                    point: {
+                        events: {
+                                click: function () {
+                                    console.log(this);
+                                    window.open('http://w2.weather.gov/aprfc/breakupDB?site='+rivers[key]['locations'][this.x],'_blank');
+                                }
+                        }
+                    }
+                },
+
             },
 
 
             series: [{
                 name: 'Breakup Dates',
                 data: riverData,
+
                 tooltip: {
                     pointFormatter: function() {
 
-						return "Latest: "+Highcharts.dateFormat('%b %e', ((this.high-1)*86400*1000))+"<br/>"+
+						return "Latest: "+Highcharts.dateFormat('%b %e', ((this.high-1)*86400*1000))+" - "+late[key][this.x]+"<br/>"+
 						"Q3: "+Highcharts.dateFormat('%b %e', ((this.q3-1)*86400*1000))+"<br/>"+
 						"Median: "+Highcharts.dateFormat('%b %e', ((this.median-1)*86400*1000))+"<br/>"+
 						"Q1:"+Highcharts.dateFormat('%b %e', ((this.q1-1)*86400*1000))+"<br/>"+
-						"Earliest: "+Highcharts.dateFormat('%b %e', ((this.low-1)*86400*1000))+"<br/>";
+						"Earliest: "+Highcharts.dateFormat('%b %e', ((this.low-1)*86400*1000))+" - "+early[key][this.x]+"<br/>";
 					}
                 }
                 }, {
