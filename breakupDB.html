@@ -206,7 +206,8 @@
         breakupData['data'] = allData[site]['hdata'];
         breakupData['name'] = allData[site]['name'];
         breakupData['startYear'] = 1980;
-        breakupData['endYear'] = 2016;
+        var today = new Date();
+        breakupData['endYear'] = parseInt(today.getFullYear());
         breakupData['statsSeries'] = new Array();
         breakupData['stats'] = new Array();
         breakupData['outliers'] = new Array();
@@ -229,7 +230,7 @@
         var dataTable = createTable(allData[site]);
 
         $("#dateTable").html(dataTable);
-        
+
         $('#directLink').html('<a href="'+window.location.href.split('?')[0]+'?site='+site+'">Direct Link to Site</a>');
 
         }
