@@ -302,6 +302,16 @@ $(document).keydown(function(e) {
         });
     }
 
+    $(function() {
+        $.getJSON('breakupData.json', function(data) { // initialize the tree by loading the file first
+            allData = data;
+            loadCharts();
+        });
+
+        $("#updateGraph").click(function() {
+            loadCharts();
+        });
+    });
     </script>
 </head>
 <body>
@@ -316,16 +326,6 @@ Study Year: <input type="text" id="studyyear" value="2016"><br>
 <div id="yukonContainer" class='iceGraph' style="height: 400px; margin: auto; width: 600px"></div>
 </body>
 <script>
-$(function() {
-   $.getJSON('breakupData.json', function(data) { // initialize the tree by loading the file first
-            allData = data;
-            loadCharts();
-   });
 
-  $("#updateGraph").click(function() {
-
-        loadCharts();
-    });
-});
 </script>
 </html>
