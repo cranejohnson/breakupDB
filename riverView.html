@@ -25,7 +25,11 @@
 
     jQuery.fn.exists = function(){return this.length>0;}
 
-
+    function leapYear(year)
+    {
+        return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+    }
+    
     function getCol(matrix, col){
        var column = [];
        for(var i=0; i<matrix.length; i++){
@@ -93,13 +97,14 @@
     var allData = new Array();
     var riverData = new Array();
     var compareYear = new Array();
-    var year = 2015;
+    var today = new Date();
+    var year = parseInt(today.getFullYear());
     var siteNames= new Array();
-    var siteCount = new Array();
+    var siteCount = {};
     var early = {};
     var late = {};
     var startYear = 1980;
-    var endYear = 2015;
+    var endYear = parseInt(today.getFullYear())-1;
     var graphWidth = 700;
     var graphHieght = 450;
 
@@ -114,9 +119,10 @@
             riverData = [];
             siteNames = [];
             compareYear = [];
-            siteCount = [];
+            
             early[key]= new Array();
             late[key]= new Array();
+            siteCount[key] = new Array();
 
             for (index = 0; index < value.locations.length; ++index) {
                 var site =  value.locations[index];
@@ -134,7 +140,7 @@
                 });
                 late[key].push(getCol(result,0).join())
 
-                siteCount.push(series.length);
+                siteCount[key].push(series.length);
                 riverData.push(stats);
                 siteNames.push(allData[site]['location']+" ("+series.length+")");
                 if (typeof allData[site]['data'][year.toString()] !== 'undefined'){
@@ -276,12 +282,12 @@ $(document).keydown(function(e) {
 
                 tooltip: {
                     pointFormatter: function() {
-
-						return "Latest: "+Highcharts.dateFormat('%b %e', ((this.high-1)*86400*1000))+" - "+late[key][this.x]+"<br/>"+
+                        return siteCount[key][this.x]+" years of data<br/>Latest: "+Highcharts.dateFormat('%b %e', ((this.high-1)*86400*1000))+" - "+late[key][this.x]+"<br/>"+
 						"Q3: "+Highcharts.dateFormat('%b %e', ((this.q3-1)*86400*1000))+"<br/>"+
 						"Median: "+Highcharts.dateFormat('%b %e', ((this.median-1)*86400*1000))+"<br/>"+
 						"Q1:"+Highcharts.dateFormat('%b %e', ((this.q1-1)*86400*1000))+"<br/>"+
-						"Earliest: "+Highcharts.dateFormat('%b %e', ((this.low-1)*86400*1000))+" - "+early[key][this.x]+"<br/>";
+						"Earliest: "+Highcharts.dateFormat('%b %e', ((this.low-1)*86400*1000))+" - "+early[key][this.x]+"<br/>"+
+                        "Dates are based on non-leap year values.<br/>Subtract 1 day to leap years for the calendar date.";
 					}
                 }
                 }, {
@@ -294,7 +300,14 @@ $(document).keydown(function(e) {
                 },
                 tooltip: {
                     pointFormatter: function() {
-						return Highcharts.dateFormat('%b %e', ((this.y-1)*86400*1000));
+                        var leapAdj = 0;
+                        var qual = '';
+                        if(leapYear(year)){
+                            leapAdj = -1;
+                            qual = '(leap year)';
+                        }    
+                            
+						return Highcharts.dateFormat('%b %e', ((this.y-1+leapAdj)*86400*1000))+' '+qual;
 					}
                 }
             }]
@@ -317,9 +330,10 @@ $(document).keydown(function(e) {
 <body>
 Normals Start Year:  <input type="text" id="startyear" value="1980"><br>
 Normals End Year:  <input type="text" id="endyear" value="2015"><br>
-Study Year: <input type="text" id="studyyear" value="2016"><br>
+Year to Plot: <input type="text" id="studyyear" value="2016"><br>
 <button id="updateGraph">Update</button>
 <h3>Use left and right arrows to toggle year to view.</h3>
+<h4>Dates are normalize to non-leap year values</h4>
 
 
 <div id="kuskokwimContainer" class='iceGraph' style="height: 400px; margin: auto; width: 600px"></div>
