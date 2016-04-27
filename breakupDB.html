@@ -27,6 +27,10 @@
 
     <script>
 
+    function leapYear(year)
+    {
+        return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+    }
 
     function getParameterByName(name, url) {
         if (!url) url = window.location.href;
@@ -107,7 +111,7 @@
 		$('#end').html(data['endYear']);
 		if(data['statsSeries'] && data['statsSeries'].length){
 			$('#numYears').html(data['statsSeries'].length+'/'+(data['endYear']-data['startYear']+1));
-            
+
 			loadPageStats(data['stats'][0]);
 		}else{
             $('#numYears').html('0/'+(data['endYear']-data['startYear']+1));
@@ -385,7 +389,13 @@
 			},
 			tooltip: {
 				formatter: function() {
-					return '<b>'+this.x+"<br>"+Highcharts.dateFormat('%b %e', ((this.y-1)*86400*1000)) +'</b>';
+				    var qual = '';
+				    var leapAdj = 0;
+				    if(leapYear(this.x)){
+				        qual = '(leap year)';
+				        leapAdj = -1;
+				    }
+					return '<b>'+this.x+"<br>"+Highcharts.dateFormat('%b %e', ((this.y-1+leapAdj)*86400*1000)) +' '+qual+'</b>';
 				}
 			},
 			plotOptions: {
@@ -519,7 +529,7 @@
         <div id = 'report'></div>
 
           <i>Click on the chart to select a different date range.</i><br>
-          <table id="hor-minimalist-b"><thead><tr><th width = "50" colspan = "2">Shaded Region<br>Statistics</th></tr></thead>
+          <table id="hor-minimalist-b"><thead><tr><th width = "50" colspan = "2">Shaded Region<br>Statistics<br>Dates based on non-leap year</th></tr></thead>
             <tbody>
                 <tr><td>Start Year</td><td><div id = 'start'></div></td></tr>
                 <tr><td>End Year</td><td><div id = 'end'></div></td></tr>
