@@ -69,6 +69,9 @@ $editor->setInputType('siteID','select');
 $editor->setValuesFromQuery('siteID','select id,concat(river," ",atnr," ",location) as longname  FROM breakupSites order by river,location');
 
 $editor->addValidationCallback('breakup','validateDate');
+$editor->setDisplayNames(array('forecastStart'       => 'Initial Forecast Start Date',
+                              'forecastEnd'     => 'Initial Forecast End Date',
+                              'severity' => 'Impact Based Flood Severity'));
 
 
 $editor->display();
