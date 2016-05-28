@@ -73,6 +73,7 @@ $editor->setDisplayNames(array('forecastStart'       => 'Initial Forecast Start 
                               'forecastEnd'     => 'Initial Forecast End Date',
                               'severity' => 'Impact Based Flood Severity'));
 
+$editor->addDisplayFilter('internalNotes', create_function('$v', 'return str_curtail($v, 20);'));
 
 $editor->display();
 
