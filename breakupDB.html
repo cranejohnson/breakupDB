@@ -86,7 +86,7 @@
     }
 
 
-    //Load states into webpage elements
+    //Load stats into webpage elements
     function loadPageStats(stats){
         if(stats[1]){
             var max = moment("2013-12-31").add(stats[4], 'days');
@@ -96,6 +96,7 @@
             $('#average').html(average.format('MMM D'));
             $('#min').html(min.format('MMM D'));
             $('#stddev').html((stats[3]-stats[1]).toFixed(1));
+            
         }
         else{
             $('#max').html('');
@@ -107,8 +108,8 @@
 
     //Update the page with new data
     function updatePage(data){
-        $('#start').html(data['startYear']);
-        $('#end').html(data['endYear']);
+        $('#start').val(data['startYear']);
+        $('#end').val(data['endYear']);
         if(data['statsSeries'] && data['statsSeries'].length){
             $('#numYears').html(data['statsSeries'].length+'/'+(data['endYear']-data['startYear']+1));
 
@@ -123,7 +124,11 @@
 
    $(function() {
         site = getParameterByName('site');
-        console.log(site);
+        $('#start').val(baseYear);
+        var today = new Date();
+        
+        $('#end').val(parseInt(today.getFullYear()));
+        
         var options = {
                 choose: function(level) {
                     switch(level){
@@ -150,11 +155,21 @@
         $.getJSON('breakupMenu.json', function(tree) { // initialize the tree by loading the file first
             $('input[name=riverOption]').optionTree(tree,options).change(function(){
                 site = this.value.match(/ID:([0-9]*)/)[1];
-                console.log(site);
                 loadSite(site);
              });
         });
-
+        $( ".updateyear" ).change(function() {
+            breakupData['startYear']  = $('#start').val();
+            breakupData['endYear']  = $('#end').val();
+            sigTrend = testSig(breakupData['statsSeries'],ss);
+            if(!sigTrend) {
+                breakupData['plotStyle'] = 'Dot';
+            }else{
+                breakupData['plotStyle'] = 'Solid';
+            }
+            createChart();
+            updatePage(breakupData);
+        });
     });
 
 
@@ -270,7 +285,7 @@
     return table;
     }
 
-
+    
 
 
 
@@ -282,12 +297,25 @@
     var plotStyle = 'Solid';
     var xMax = new Date().getFullYear()+10;
     var breakupData = new Array();
+    var baseYear = 1980;
 
 
     function createChart() {
+        breakupData['statsSeries'] = getStatsSeries(breakupData['data'],breakupData['startYear'],breakupData['endYear']);
+        breakupData['stats'] = Array(getStats(breakupData['statsSeries'],ss));
+        sigTrend = testSig(breakupData['statsSeries'],ss);
+        if(!sigTrend) {
+            breakupData['plotStyle'] = 'Dot';
+        }else{
+            breakupData['plotStyle'] = 'Solid';
+        }
+        if ('undefined' !== typeof breakupData['statsSeries']) {
+            breakupData['slope'] = ss.linearRegression(breakupData['statsSeries']).m.toFixed(2);
+        }
+        updatePage(breakupData);
         chart = new Highcharts.Chart({
             xAxis: {
-                 max: xMax,
+                max: xMax,
                 plotLines: [{
                     value: breakupData['startYear'],
                     width:2,
@@ -363,19 +391,6 @@
                                 breakupData['startYear'] = temp;
                             }
                             first_line = true;
-                            breakupData['statsSeries'] = getStatsSeries(breakupData['data'],breakupData['startYear'],breakupData['endYear']);
-                            breakupData['stats'] = Array(getStats(breakupData['statsSeries'],ss));
-                            updatePage(breakupData);
-                            if ('undefined' !== typeof breakupData['statsSeries']) {
-                                breakupData['slope'] = ss.linearRegression(breakupData['statsSeries']).m.toFixed(2);
-                            }
-                            sigTrend = testSig(breakupData['statsSeries'],ss);
-                            if(!sigTrend) {
-                                breakupData['plotStyle'] = 'Dot';
-                            }else{
-                                breakupData['plotStyle'] = 'Solid';
-                            }
-
                             createChart();
                         }
                     }
@@ -494,15 +509,17 @@
             }]
         },
         function (chart) { // on complete
-
-            var $text =  'No Significant Trend'
-            if(sigTrend) $text = 'Significant Trend'
-            chart.renderer.text($text, 450, 40)
-             .css({
-                color: '#4572A7',
-                fontSize: '18px'
-            })
-            .add();
+            //Only add the significance indication if N = 50 or greater
+            if(breakupData['statsSeries'].length>49){
+                var $text =  'No Significant Trend'
+                if(sigTrend) $text = 'Significant Trend'
+                chart.renderer.text($text, 450, 40)
+                 .css({
+                    color: '#4572A7',
+                    fontSize: '18px'
+                })
+                .add();
+            }    
         });
     }
     </script>
@@ -528,17 +545,17 @@
         <td style="width: 180px">
         <div id = 'report'></div>
 
-          <i>Click on the chart to select a different date range.</i><br>
-          <table id="hor-minimalist-b"><thead><tr><th width = "50" colspan = "2">Shaded Region<br>Statistics<br>(<em>dates based on non-leap year</em>)</th></tr></thead>
-            <tbody>
-                <tr><td>Start Year</td><td><div id = 'start'></div></td></tr>
-                <tr><td>End Year</td><td><div id = 'end'></div></td></tr>
-                <tr><td>Number</td><td><div id = 'numYears'></div></td></tr>
-                <tr><td>Min.</td><td><div id = 'min'></div></td></tr>
-                <tr><td>Median</td><td><div id = 'average'></div></td></tr>
-                <tr><td>Max.</td><td><div id = 'max'></div></td></tr>
-                <tr><td>IQR</td><td><div id = 'stddev'></div>days</td></tr>
-            </tbody>
+            <i>Click on the chart to select a different date range.</i><br>
+            <table id="hor-minimalist-b"><thead><tr><th width = "50" colspan = "2">Shaded Region<br>Statistics<br>(<em>dates based on non-leap year</em>)</th></tr></thead>
+                <tbody>
+                    <tr><td>Start Year</td><td><input style="background-color:#E3FBE0;" type="text" class='updateyear' id="start" size="4"></div></td></tr>
+                    <tr><td>End Year</td><td><input style="background-color:#E3FBE0;" type="text" class='updateyear' id="end" size="4"></div></td></tr>
+                    <tr><td>Number</td><td><div id = 'numYears'></div></td></tr>
+                    <tr><td>Min.</td><td><div id = 'min'></div></td></tr>
+                    <tr><td>Median</td><td><div id = 'average'></div></td></tr>
+                    <tr><td>Max.</td><td><div id = 'max'></div></td></tr>
+                    <tr><td>IQR</td><td><div id = 'stddev'></div>days</td></tr>
+                </tbody>
           </table>
           <div style='text-align:center;'>
           <i >Click on a datapoint to remove it from the statistical calculation</i>
