@@ -43,77 +43,77 @@
     }
 
     //Get stats from data and return array(min,bottomofbox,mean,topofbox,max)
-	function getStats(data,ss) {
-	 	if (typeof data === 'undefined'){
-	 		return;
-	 	}
-	 	else{
-			data = getStatsData(data);
-			var min = ss.min(data);
-			var max = ss.max(data);
-			var median = ss.median(data);
-			var range = ss.interquartileRange(data);
-			var lowerq = median - range/2;
-			var upperq = median + range/2;
-//			var stats = new Array(ss.min(data),(ss.mean(data)-ss.sampleStandardDeviation(data)),ss.mean(data),(ss.mean(data)+ss.sampleStandardDeviation(data)),ss.max(data));
+    function getStats(data,ss) {
+        if (typeof data === 'undefined'){
+            return;
+        }
+        else{
+            data = getStatsData(data);
+            var min = ss.min(data);
+            var max = ss.max(data);
+            var median = ss.median(data);
+            var range = ss.interquartileRange(data);
+            var lowerq = median - range/2;
+            var upperq = median + range/2;
+//          var stats = new Array(ss.min(data),(ss.mean(data)-ss.sampleStandardDeviation(data)),ss.mean(data),(ss.mean(data)+ss.sampleStandardDeviation(data)),ss.max(data));
             var stats = new Array(min,lowerq,median,upperq,max);
-			return stats;
-		}
-	}
+            return stats;
+        }
+    }
 
-   	 //Extract the series to use for statistics based on a min and max year
-	function getStatsSeries(data,minyear,maxyear){
-		if(data && data.length){
-			var series = new Array();
-			for (i = 0; i < data.length; i++) {
-				 if((data[i][0] >= minyear) && (data[i][0]<= maxyear)){
-					series.push(data[i]);
-				 }
-			}
+     //Extract the series to use for statistics based on a min and max year
+    function getStatsSeries(data,minyear,maxyear){
+        if(data && data.length){
+            var series = new Array();
+            for (i = 0; i < data.length; i++) {
+                 if((data[i][0] >= minyear) && (data[i][0]<= maxyear)){
+                    series.push(data[i]);
+                 }
+            }
 
-			return series;
-		}
-	}
+            return series;
+        }
+    }
 
     //Takes series [[x,y],[x2,y2]...] and returns [y1,y2....]
-	function getStatsData(data){
-		var series = new Array();
-		for (i = 0; i < data.length; i++) {
+    function getStatsData(data){
+        var series = new Array();
+        for (i = 0; i < data.length; i++) {
                 jday = data[i][1];
-				series.push(jday);
-		}
-		return series;
-	}
+                series.push(jday);
+        }
+        return series;
+    }
 
 
     //Load states into webpage elements
-	function loadPageStats(stats){
-	    if(stats[1]){
-			var max = moment("2013-12-31").add(stats[4], 'days');
-			var min = moment("2013-12-31").add(stats[0], 'days');
- 			var average = moment("2013-12-31").add(stats[2], 'days');
-			$('#max').html(max.format('MMM D'));
-			$('#average').html(average.format('MMM D'));
-			$('#min').html(min.format('MMM D'));
-			$('#stddev').html((stats[3]-stats[1]).toFixed(1));
-		}
-		else{
-			$('#max').html('');
-			$('#average').html('');
-			$('#min').html('');
-			$('#stddev').html('');
-		}
-	}
+    function loadPageStats(stats){
+        if(stats[1]){
+            var max = moment("2013-12-31").add(stats[4], 'days');
+            var min = moment("2013-12-31").add(stats[0], 'days');
+            var average = moment("2013-12-31").add(stats[2], 'days');
+            $('#max').html(max.format('MMM D'));
+            $('#average').html(average.format('MMM D'));
+            $('#min').html(min.format('MMM D'));
+            $('#stddev').html((stats[3]-stats[1]).toFixed(1));
+        }
+        else{
+            $('#max').html('');
+            $('#average').html('');
+            $('#min').html('');
+            $('#stddev').html('');
+        }
+    }
 
     //Update the page with new data
     function updatePage(data){
-		$('#start').html(data['startYear']);
-		$('#end').html(data['endYear']);
-		if(data['statsSeries'] && data['statsSeries'].length){
-			$('#numYears').html(data['statsSeries'].length+'/'+(data['endYear']-data['startYear']+1));
+        $('#start').html(data['startYear']);
+        $('#end').html(data['endYear']);
+        if(data['statsSeries'] && data['statsSeries'].length){
+            $('#numYears').html(data['statsSeries'].length+'/'+(data['endYear']-data['startYear']+1));
 
-			loadPageStats(data['stats'][0]);
-		}else{
+            loadPageStats(data['stats'][0]);
+        }else{
             $('#numYears').html('0/'+(data['endYear']-data['startYear']+1));
             loadPageStats(data[1]=0);
         }
@@ -148,62 +148,62 @@
         });
 
         $.getJSON('breakupMenu.json', function(tree) { // initialize the tree by loading the file first
-	        $('input[name=riverOption]').optionTree(tree,options).change(function(){
-	            site = this.value.match(/ID:([0-9]*)/)[1];
-	            console.log(site);
-	            loadSite(site);
-	         });
+            $('input[name=riverOption]').optionTree(tree,options).change(function(){
+                site = this.value.match(/ID:([0-9]*)/)[1];
+                console.log(site);
+                loadSite(site);
+             });
         });
 
     });
 
 
 
-	function StatCom(q,i,j,b) {
-		var zz=1; var z=zz; var k=i; while(k<=j) { zz=zz*q*k/(k-b); z=z+zz; k=k+2 }
-		return z
-	}
+    function StatCom(q,i,j,b) {
+        var zz=1; var z=zz; var k=i; while(k<=j) { zz=zz*q*k/(k-b); z=z+zz; k=k+2 }
+        return z
+    }
 
 
-	function StudT(t,n) {
-		var Pi=Math.PI; var PiD2=Pi/2;
-		t=Math.abs(t); var w=t/Math.sqrt(n); var th=Math.atan(w)
-		if(n==1) { return 1-th/PiD2 }
-		var sth=Math.sin(th); var cth=Math.cos(th)
-		if((n%2)==1)
-			{ return 1-(th+sth*cth*StatCom(cth*cth,2,n-3,-1))/PiD2 }
-			else
-			{ return 1-sth*StatCom(cth*cth,1,n-3,-1) }
-	}
+    function StudT(t,n) {
+        var Pi=Math.PI; var PiD2=Pi/2;
+        t=Math.abs(t); var w=t/Math.sqrt(n); var th=Math.atan(w)
+        if(n==1) { return 1-th/PiD2 }
+        var sth=Math.sin(th); var cth=Math.cos(th)
+        if((n%2)==1)
+            { return 1-(th+sth*cth*StatCom(cth*cth,2,n-3,-1))/PiD2 }
+            else
+            { return 1-sth*StatCom(cth*cth,1,n-3,-1) }
+    }
 
     function testSig(data,ss){
         var confidenceLevel = 0.05;
-    	var residuals = new Array();
-    	var sumResid2 = 0;
-    	var xArray = new Array();
-    	var xMean = 0;
-    	var sumXi = 0;
-    	var tScore = 0;
+        var residuals = new Array();
+        var sumResid2 = 0;
+        var xArray = new Array();
+        var xMean = 0;
+        var sumXi = 0;
+        var tScore = 0;
         var slope = ss.linearRegression(data).m.toFixed(2);
-    	var line = ss.linearRegressionLine(ss.linearRegression(data));
-		for (i = 0; i < data.length; i++) {
-			xArray.push(data[i][0]);
-		}
-		xMean = ss.mean(xArray);
-		for (i = 0; i < data.length; i++) {
-			var resid = line(data[i][0])-data[i][1];
+        var line = ss.linearRegressionLine(ss.linearRegression(data));
+        for (i = 0; i < data.length; i++) {
+            xArray.push(data[i][0]);
+        }
+        xMean = ss.mean(xArray);
+        for (i = 0; i < data.length; i++) {
+            var resid = line(data[i][0])-data[i][1];
 
-			sumResid2 = sumResid2 + Math.pow(resid,2);
-			sumXi = sumXi + Math.pow((data[i][0]-xMean),2);
-		}
-		tScore = (slope*Math.sqrt(data.length-2))/(Math.sqrt(sumResid2/sumXi))
-		if(StudT(tScore,(data.length-2)) < confidenceLevel){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
+            sumResid2 = sumResid2 + Math.pow(resid,2);
+            sumXi = sumXi + Math.pow((data[i][0]-xMean),2);
+        }
+        tScore = (slope*Math.sqrt(data.length-2))/(Math.sqrt(sumResid2/sumXi))
+        if(StudT(tScore,(data.length-2)) < confidenceLevel){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
 
     function loadSite(site){
@@ -284,235 +284,235 @@
     var breakupData = new Array();
 
 
-	function createChart() {
-		chart = new Highcharts.Chart({
-			xAxis: {
+    function createChart() {
+        chart = new Highcharts.Chart({
+            xAxis: {
                  max: xMax,
-				plotLines: [{
-					value: breakupData['startYear'],
-					width:2,
-					id: 'vert_1',
-					dashStyle: 'dash',
-					color: 'rgba(255,140,0,0.5)',
-					},{
-					value: breakupData['endYear'],
-					width:2,
-					id: 'vert_2',
-					dashStyle: 'dash',
-					color: 'rgba(255,140,0,0.5)',
-			  }],
-				plotBands: {
-				  color: 'rgba(115,235,100,.2)', // Color value
-				  from: breakupData['startYear'], // Start of the plot band
-				  to: breakupData['endYear'], // End of the plot band
-				  id: 'statsband'
-				},
-			minPadding: 0.05,
-			maxPadding: 0.05,
+                plotLines: [{
+                    value: breakupData['startYear'],
+                    width:2,
+                    id: 'vert_1',
+                    dashStyle: 'dash',
+                    color: 'rgba(255,140,0,0.5)',
+                    },{
+                    value: breakupData['endYear'],
+                    width:2,
+                    id: 'vert_2',
+                    dashStyle: 'dash',
+                    color: 'rgba(255,140,0,0.5)',
+              }],
+                plotBands: {
+                  color: 'rgba(115,235,100,.2)', // Color value
+                  from: breakupData['startYear'], // Start of the plot band
+                  to: breakupData['endYear'], // End of the plot band
+                  id: 'statsband'
+                },
+            minPadding: 0.05,
+            maxPadding: 0.05,
 
-			labels: {
-				formatter: function(){
-					if(this.value == 2020){
-						  return "Stats";
-					}
-					else{
-					  return this.value;
-					}
-				}
-			}
-			},
-			yAxis: {
-				labels: {
-					formatter: function() {
-						return Highcharts.dateFormat('%b %e', ((this.value-1)*86400*1000));
-					}
-				},
-				tickInterval : 7,
-				title: {
-					text: 'Breakup Date'
-				}
-			},
-			chart:{
+            labels: {
+                formatter: function(){
+                    if(this.value == 2020){
+                          return "Stats";
+                    }
+                    else{
+                      return this.value;
+                    }
+                }
+            }
+            },
+            yAxis: {
+                labels: {
+                    formatter: function() {
+                        return Highcharts.dateFormat('%b %e', ((this.value-1)*86400*1000));
+                    }
+                },
+                tickInterval : 7,
+                title: {
+                    text: 'Breakup Date'
+                }
+            },
+            chart:{
                 animation: false,
-				renderTo: 'container',
-				events: {
-					click: function() {
+                renderTo: 'container',
+                events: {
+                    click: function() {
                         var currentYear = new Date().getFullYear();
                         if(event.xAxis[0].value > currentYear) event.xAxis[0].value = currentYear;
 
                         if(event.xAxis[0].value < breakupData['data'][0][0]) event.xAxis[0].value =  breakupData['data'][0][0];
-						if(first_line){
-							chart.xAxis[0].removePlotLine('vert_1');
-							chart.xAxis[0].removePlotLine('vert_2');
-							chart.xAxis[0].removePlotBand('statsband');
-							chart.xAxis[0].addPlotLine({
-								value: event.xAxis[0].value.toFixed(0),
-								color: 'red',
-								width: 1,
-								id: 'vert_1',
-								zIndex:5
-							});
-							breakupData['startYear'] = event.xAxis[0].value.toFixed(0);
-							first_line = false;
-						}
-						else{
-							breakupData['endYear'] = event.xAxis[0].value.toFixed(0);
-							if(breakupData['endYear'] < breakupData['startYear']){
-								var temp = breakupData['endYear'];
-								breakupData['endYear'] = breakupData['startYear'];
-								breakupData['startYear'] = temp;
-							}
-							first_line = true;
-							breakupData['statsSeries'] = getStatsSeries(breakupData['data'],breakupData['startYear'],breakupData['endYear']);
-							breakupData['stats'] = Array(getStats(breakupData['statsSeries'],ss));
-							updatePage(breakupData);
-							if ('undefined' !== typeof breakupData['statsSeries']) {
+                        if(first_line){
+                            chart.xAxis[0].removePlotLine('vert_1');
+                            chart.xAxis[0].removePlotLine('vert_2');
+                            chart.xAxis[0].removePlotBand('statsband');
+                            chart.xAxis[0].addPlotLine({
+                                value: event.xAxis[0].value.toFixed(0),
+                                color: 'red',
+                                width: 1,
+                                id: 'vert_1',
+                                zIndex:5
+                            });
+                            breakupData['startYear'] = event.xAxis[0].value.toFixed(0);
+                            first_line = false;
+                        }
+                        else{
+                            breakupData['endYear'] = event.xAxis[0].value.toFixed(0);
+                            if(breakupData['endYear'] < breakupData['startYear']){
+                                var temp = breakupData['endYear'];
+                                breakupData['endYear'] = breakupData['startYear'];
+                                breakupData['startYear'] = temp;
+                            }
+                            first_line = true;
+                            breakupData['statsSeries'] = getStatsSeries(breakupData['data'],breakupData['startYear'],breakupData['endYear']);
+                            breakupData['stats'] = Array(getStats(breakupData['statsSeries'],ss));
+                            updatePage(breakupData);
+                            if ('undefined' !== typeof breakupData['statsSeries']) {
                                 breakupData['slope'] = ss.linearRegression(breakupData['statsSeries']).m.toFixed(2);
                             }
-					    	sigTrend = testSig(breakupData['statsSeries'],ss);
+                            sigTrend = testSig(breakupData['statsSeries'],ss);
                             if(!sigTrend) {
                                 breakupData['plotStyle'] = 'Dot';
                             }else{
                                 breakupData['plotStyle'] = 'Solid';
                             }
 
-							createChart();
-						}
-					}
-				}
-			},
-			title: {
-				text: breakupData['name']
-			},
-			credits: {
-				enabled: false
-			},
-			tooltip: {
-				formatter: function() {
-				    var qual = '';
-				    var leapAdj = 0;
-				    if(leapYear(this.x)){
-				        qual = '(leap year)';
-				        leapAdj = -1;
-				    }
-					return '<b>'+this.x+"<br>"+Highcharts.dateFormat('%b %e', ((this.y-1+leapAdj)*86400*1000)) +' '+qual+'</b>';
-				}
-			},
-			plotOptions: {
-				series: {
+                            createChart();
+                        }
+                    }
+                }
+            },
+            title: {
+                text: breakupData['name']
+            },
+            credits: {
+                enabled: false
+            },
+            tooltip: {
+                formatter: function() {
+                    var qual = '';
+                    var leapAdj = 0;
+                    if(leapYear(this.x)){
+                        qual = '(leap year)';
+                        leapAdj = -1;
+                    }
+                    return '<b>'+this.x+"<br>"+Highcharts.dateFormat('%b %e', ((this.y-1+leapAdj)*86400*1000)) +' '+qual+'</b>';
+                }
+            },
+            plotOptions: {
+                series: {
                     animation: false,
-					enableMouseTracking: false,
-					point: {
-						events: {
-							'click': function () {
+                    enableMouseTracking: false,
+                    point: {
+                        events: {
+                            'click': function () {
                                 if(!first_line) return;
 
-								if(this.series.name == 'Breakup Dates') {
-									breakupData['data'].splice(this.x.toFixed(0),1);
-									breakupData['outliers'].push(new Array(this.x,this.y));
-									breakupData['outliers'].sort();
-								}
-								if(this.series.name == 'Outliers'){
-									breakupData['outliers'].splice(this.x.toFixed(0),1);
-									breakupData['data'].push(new Array(this.x,this.y));
-									breakupData['data'].sort();
-								}
-								this.remove();
+                                if(this.series.name == 'Breakup Dates') {
+                                    breakupData['data'].splice(this.x.toFixed(0),1);
+                                    breakupData['outliers'].push(new Array(this.x,this.y));
+                                    breakupData['outliers'].sort();
+                                }
+                                if(this.series.name == 'Outliers'){
+                                    breakupData['outliers'].splice(this.x.toFixed(0),1);
+                                    breakupData['data'].push(new Array(this.x,this.y));
+                                    breakupData['data'].sort();
+                                }
+                                this.remove();
 
-								var chart = $('#container').highcharts();
+                                var chart = $('#container').highcharts();
 
-								breakupData['statsSeries'] = getStatsSeries(breakupData['data'],breakupData['startYear'],breakupData['endYear']);
-								breakupData['stats'] = Array(getStats(breakupData['statsSeries'],ss));
-								updatePage(breakupData);
-								breakupData['slope'] = ss.linearRegression(breakupData['statsSeries']).m.toFixed(2);
-								sigTrend = testSig(breakupData['statsSeries'],ss);
+                                breakupData['statsSeries'] = getStatsSeries(breakupData['data'],breakupData['startYear'],breakupData['endYear']);
+                                breakupData['stats'] = Array(getStats(breakupData['statsSeries'],ss));
+                                updatePage(breakupData);
+                                breakupData['slope'] = ss.linearRegression(breakupData['statsSeries']).m.toFixed(2);
+                                sigTrend = testSig(breakupData['statsSeries'],ss);
                                 if(!sigTrend) {
                                     breakupData['plotStyle'] = 'Dot';
                                 }else{
                                     breakupData['plotStyle'] = 'Solid';
                                 }
 
-								createChart();
+                                createChart();
 
-							}
-						}
-					}
-				}
-			},
-			series: [{
-				enableMouseTracking: true,
-				data: breakupData['data'],
-				name: 'Breakup Dates',
-				lineWidth : 0,
-				type: 'scatter',
-				marker: {
-					radius: 4,
-					fillColor: '#FFFFFF',
-					lineColor: 'black',
-					lineWidth: 2
-				}
-			},
-			{
-				showInLegend: false,
-				regression: true ,
-				name: 'Shaded Area Trend',
-				regressionSettings: {
-					type: 'linear',
+                            }
+                        }
+                    }
+                }
+            },
+            series: [{
+                enableMouseTracking: true,
+                data: breakupData['data'],
+                name: 'Breakup Dates',
+                lineWidth : 0,
+                type: 'scatter',
+                marker: {
+                    radius: 4,
+                    fillColor: '#FFFFFF',
+                    lineColor: 'black',
+                    lineWidth: 2
+                }
+            },
+            {
+                showInLegend: false,
+                regression: true ,
+                name: 'Shaded Area Trend',
+                regressionSettings: {
+                    type: 'linear',
                     dashStyle: breakupData['plotStyle'],
-					visible: true,
-					color:  'green',
-					label: 'Shaded Area Trend (s='+breakupData['slope']+')'
-				},
-				data: breakupData['statsSeries'],
-				type: 'scatter',
+                    visible: true,
+                    color:  'green',
+                    label: 'Shaded Area Trend (s='+breakupData['slope']+')'
+                },
+                data: breakupData['statsSeries'],
+                type: 'scatter',
 
-				marker: {
-					enabled: false
-				}
-			},
-			{
-				enableMouseTracking: true,
-				showInLegend: true,
-				name: 'Outliers',
-				data: breakupData['outliers'],
-				type: 'scatter',
-				marker: {
-					radius: 4,
-					fillColor: '#FFFFFF',
-					lineColor: 'red',
-					lineWidth: 2
-				}
-			},
-			{
-				name: 'Max,Min,Avg,STdev',
-				data: breakupData['stats'],
-				type: 'boxplot',
-				pointWidth: 10,
-				color: 'blue',
-				lineColor: 'black',
-				pointStart: 2020
-			}]
-		},
-		function (chart) { // on complete
+                marker: {
+                    enabled: false
+                }
+            },
+            {
+                enableMouseTracking: true,
+                showInLegend: true,
+                name: 'Outliers',
+                data: breakupData['outliers'],
+                type: 'scatter',
+                marker: {
+                    radius: 4,
+                    fillColor: '#FFFFFF',
+                    lineColor: 'red',
+                    lineWidth: 2
+                }
+            },
+            {
+                name: 'Max,Min,Avg,STdev',
+                data: breakupData['stats'],
+                type: 'boxplot',
+                pointWidth: 10,
+                color: 'blue',
+                lineColor: 'black',
+                pointStart: 2020
+            }]
+        },
+        function (chart) { // on complete
 
-			var $text =  'No Significant Trend'
-			if(sigTrend) $text = 'Significant Trend'
-			chart.renderer.text($text, 450, 40)
-			 .css({
-				color: '#4572A7',
-				fontSize: '18px'
-			})
-			.add();
-    	});
-	}
+            var $text =  'No Significant Trend'
+            if(sigTrend) $text = 'Significant Trend'
+            chart.renderer.text($text, 450, 40)
+             .css({
+                color: '#4572A7',
+                fontSize: '18px'
+            })
+            .add();
+        });
+    }
     </script>
 
 
     <h3>Select a river to plot breakup dates:</h3>
     <ol>
-	<li> Select a region</li>
-	<li> Then select a river</li>
-	<li> Then select a location</li>
+    <li> Select a region</li>
+    <li> Then select a river</li>
+    <li> Then select a location</li>
     </ol>
 
       <input type='text' name='riverOption' size="50" value="" readonly>
