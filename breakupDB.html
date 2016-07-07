@@ -145,13 +145,14 @@
                     return text;
                 },
         }; // value for default option (include field name)
+//        $.getJSON('/source/aprfc/breakupData.json', function(data) { // initialize the tree by loading the file first
         $.getJSON('breakupData.json', function(data) { // initialize the tree by loading the file first
             allData = data;
             if(site != null){
                 loadSite(site);
             }
         });
-
+//        $.getJSON('/source/aprfc/breakupMenu.json', function(tree) { // initialize the tree by loading the file first
         $.getJSON('breakupMenu.json', function(tree) { // initialize the tree by loading the file first
             $('input[name=riverOption]').optionTree(tree,options).change(function(){
                 site = this.value.match(/ID:([0-9]*)/)[1];
