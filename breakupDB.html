@@ -25,7 +25,7 @@
 
 
 
-    <script>
+    <script type="text/javascript">
 
     function leapYear(year)
     {
@@ -55,7 +55,6 @@
             var range = ss.interquartileRange(data);
             var lowerq = median - range/2;
             var upperq = median + range/2;
-//          var stats = new Array(ss.min(data),(ss.mean(data)-ss.sampleStandardDeviation(data)),ss.mean(data),(ss.mean(data)+ss.sampleStandardDeviation(data)),ss.max(data));
             var stats = new Array(min,lowerq,median,upperq,max);
             return stats;
         }
@@ -476,6 +475,7 @@
                     type: 'linear',
                     dashStyle: breakupData['plotStyle'],
                     visible: true,
+                    name: 'Trend',
                     color:  'green',
                     label: 'Shaded Area Trend (s='+breakupData['slope']+')'
                 },
