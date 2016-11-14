@@ -1,1 +1,2 @@
-cms_publicdata*
+cms_*
+*.sh
