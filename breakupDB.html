@@ -1,4 +1,4 @@
-   <div align='left'>
+<div align='left'>
    <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"> -->
 
     <script src="//code.jquery.com/jquery-latest.min.js"></script>
@@ -10,15 +10,18 @@
     <script src="http://highcharts.github.io/export-csv/export-csv.js"></script>
 
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.js"></script>
-    <!--<script src= "resources/js/sorttable.js"></script>-->
-    <!--<script src="resources/js/simple_statistics.js"></script>-->
-    <!--<script src="resources/js/jquery.optionTree.js"></script>-->
-    <script src=  "http://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+
+
+    <script src= "http://www.weather.gov/source/aprfc/js/jquery.optionTree.js"></script>
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.0/simple_statistics.min.js"></script>
-    <script src= "http://kotowicz.net/jquery-option-tree/jquery.optionTree.js"></script>
     <script src= "http://aprfc.arh.noaa.gov/javascript/highcharts_reg.js"></script>
     <script src= "//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"></script>
 
+    <style type="text/css">
+        #datatable  th, td {
+            border: solid black 1px;
+        }
+    </style>
 
 
     <script type="text/javascript">
@@ -252,9 +255,9 @@
 
 
     function createTable(data){
-        var table = $("<table id='datatable' class='sortable'></table>");
+        var table = $("<table id='datatable' width='960' ></table>");
         var head = $("<thead></thead>");
-        head.append("<tr><th>River</th><th>Location</th><th>Year</th><th>Breakup Date</th><th>Ice Moved</th><th>First Boat</th><th>Un-safe Person</th><th>Unsafe Vehicle</th><th>Last Ice</th><th>Remarks</th></tr>");
+        head.append("<tr><th>River</th><th>Location</th><th>Year</th><th width='75'>Breakup Date</th><th width='60'>Ice Moved</th><th width='60'>First Boat</th><th>Un-safe Person</th><th>Unsafe Vehicle</th><th>Last Ice</th><th>Remarks</th></tr>");
         table.append(head);
 
         var river = data.river;
@@ -536,11 +539,11 @@
     <table>
       <tr>
         <td>
-          <div id="container" style="height: 400px; width: 700px"></div>
+          <div id="container" style="height: 400px; width: 750px"></div>
           <i>Statistically significant trends evaluated using the t-test at the 95% confidence level.</i>
         </td>
-        <td style="width: 180px">
-        <div id = 'report'></div>
+        <td style="width: 200px" align="center">
+        <div id = 'report' ></div>
 
             <i>Click on the chart to select a different date range.</i><br>
             <table id="hor-minimalist-b"><thead><tr><th width = "50" colspan = "2">Shaded Region<br>Statistics<br>(<em>dates based on non-leap year</em>)</th></tr></thead>
@@ -565,6 +568,4 @@
 
    <h2>Breakup Dates Table</h2>
    <div id="dateTable"> </div>
-   </div>
-
-
+</div>

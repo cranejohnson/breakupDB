@@ -6,14 +6,8 @@
     <script src="http://highcharts.github.io/export-csv/export-csv.js"></script>
 
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.js"></script>
-    <!--<script src= "resources/js/sorttable.js"></script>-->
-    <!--<script src="resources/js/simple_statistics.js"></script>-->
-    <!--<script src="resources/js/jquery.optionTree.js"></script>-->
-    <script src=  "http://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.0/simple_statistics.min.js"></script>
-    <script src= "http://kotowicz.net/jquery-option-tree/jquery.optionTree.js"></script>
-    <script src= "http://aprfc.arh.noaa.gov/javascript/highcharts_reg.js"></script>
-
+ 
 
     <script>
 
@@ -281,7 +275,7 @@ $(document).keydown(function(e) {
 						"Median: "+Highcharts.dateFormat('%b %e', ((this.median-1)*86400*1000))+"<br/>"+
 						"Q1:"+Highcharts.dateFormat('%b %e', ((this.q1-1)*86400*1000))+"<br/>"+
 						"Earliest: "+Highcharts.dateFormat('%b %e', ((this.low-1)*86400*1000))+" - "+early[key][this.x]+"<br/>"+
-                        "Dates are based on non-leap year values.<br/>Subtract 1 day to leap years for the calendar date.";
+                        "Dates above are based on non-leap year values<br/>Subtract 1 day during leap years to determine the calendar date that year";
 					}
                 }
                 }, {
