@@ -1,6 +1,6 @@
 <?php
 
-#require_once('/hd1apps/data/intranet/html/private/adminconnect.php');
+#require_once('/var/www/html/private/adminconnect.php');
 #$host = 'localhost';
 #$user = 'hydro';
 #$pwd = 'fl00d!';
@@ -11,9 +11,9 @@
 #$db = new mysqli($host,$user,$pwd,$db);
 
 //Push the breakup data out to JSON files for public use
-require_once('/hd1apps/data/intranet/html/tools/breakupDB/breakup.php');
+require_once('/var/www/html/tools/breakupDB/breakup.php');
 
-require_once('/hd1apps/data/intranet/html/private/adminconnecti.php');
+require_once('/var/www/html/private/adminconnecti.php');
 $mysqli->select_db("aprfc");
 
 if ($mysqli->connect_errno) {
