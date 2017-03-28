@@ -74,11 +74,15 @@
     var rivers = {
         "kuskokwim" : {
             "locations":[281,276,286,285,284,273,270,274,288,269,271,278],
-            "name": "Kuskokwim River"
+            "name": "Kuskokwim River",
+            "yMax":161,
+            "yMin":98
             },
         "yukon" : {
             "locations":[468,469,465,472,494,491,475,480,478,471],
-            "name": "Yukon River"
+            "name": "Yukon River",
+            "yMax":161,
+            "yMin":98
             }
         }
 
@@ -219,6 +223,8 @@ $(document).keydown(function(e) {
             },
 
             yAxis: {
+                min:rivers[key].yMin,
+                max:rivers[key].yMax,
 				labels: {
 					formatter: function() {
 						return Highcharts.dateFormat('%b %e', ((this.value-1)*86400*1000));
@@ -313,9 +319,10 @@ $(document).keydown(function(e) {
             loadCharts();
         });
     });
+
     </script>
-Normals Start Year:  <input type="text" id="startyear" value="1980"><br>
-Normals End Year:  <input type="text" id="endyear" value="2015"><br>
+Normals Start Year:  <input type="text" id="startyear"><br>
+Normals End Year:  <input type="text" id="endyear"><br>
 Year to Plot: <input type="text" id="studyyear" value="2016"><br>
 <button id="updateGraph">Update</button>
 <h3>Use left and right arrows to toggle year to view.</h3>
@@ -324,3 +331,9 @@ Year to Plot: <input type="text" id="studyyear" value="2016"><br>
 
 <div id="kuskokwimContainer" class='iceGraph' style="height: 400px; margin: auto; width: 600px"></div>
 <div id="yukonContainer" class='iceGraph' style="height: 400px; margin: auto; width: 600px"></div>
+
+<script>
+    $("#startyear").val(startYear);    
+    $("#endyear").val(endYear);
+    $("#studyyear").val(year);
+</script>
