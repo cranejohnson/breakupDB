@@ -5,12 +5,12 @@
  * and the second one with breakup data.  The JSON files are used as input
  * to an html page which plots the data via javascript.
  * Normally this script will be run daily to generate updated JSON files for
- * web display.  
+ * web display.
  *
  * It can also be run from a browser to output a table of average breakup dates
  * breakup.php?t&s=1980&e=2016
  *
- 
+
  * @author Crane Johnson <benjamin.johnson@noaa.gov>
  * @version 0.1
  */
@@ -78,8 +78,10 @@ while($row = $result->fetch_array()){
 $query = "SELECT river,region,location,id,atnr FROM breakupSites ORDER BY region,river,location asc";
 $result = $mysqli->query($query) or die($mysqli->error);
 $option_tree = array();
+$selectSet = array();
 while($row = $result->fetch_array()){
 
+    $selectSet[$row['id']] = "{$row['region']} - {$row['river']} {$row['atnr']} {$row['location']}";
     if(!isset($numcount[$row['id']])) {
         $numcount[$row['id']] = "0";
         continue;
@@ -112,18 +114,21 @@ foreach($option_tree as $region => $rivers){
 
 
 //Save the menu data to a JSON file
+file_put_contents('cms_publicdata+breakupMenuNew.json',json_encode($selectSet));
+file_put_contents('breakupMenuNew.json',json_encode($selectSet));
 file_put_contents('breakupMenu.json',json_encode($option_tree));
 file_put_contents('cms_publicdata+breakupMenu.json',json_encode($option_tree));
 chmod("breakupMenu.json", 0777);
 chmod("cms_publicdata+breakupMenu.json", 0777);
+chmod("breakupMenuNew.json", 0777);
+chmod("cms_publicdata+breakupMenuNew.json", 0777);
 
 
-
-//Start working on created the breakup data JSON file
+//Start working on creating the breakup data JSON file
 $query = "select dayofyear(breakup) as breakupDay,river,atnr,location,firstboat,unsafeman,unsafeveh,lastice,icemoved,remarks,breakup,siteID,year from breakupdata left join breakupSites on breakupdata.siteID = breakupSites.id order by siteID,year";
 $result = $mysqli->query($query) or die($mysqli->error);
 while($row = $result->fetch_array()){
-    
+
     //Build the json structure from the query
     $siteData[$row['siteID']]['name'] = $row['river']." ".$row['atnr']." ".$row['location'];
     $siteData[$row['siteID']]['river'] = $row['river'];
@@ -134,7 +139,7 @@ while($row = $result->fetch_array()){
     $siteData[$row['siteID']]['data'][$row['year']]['lastice']  = formatDate($row['lastice']);
     $siteData[$row['siteID']]['data'][$row['year']]['icemoved']  = formatDate($row['icemoved']);
     $siteData[$row['siteID']]['data'][$row['year']]['remarks']=   $row['remarks'];
-   
+
     $siteData[$row['siteID']]['data'][$row['year']]['jday'] =$row['breakupDay'];
     $siteData[$row['siteID']]['data'][$row['year']]['breakup'] = $row['breakup'];
     //Create a separate array that has paired (year,julianDay) for plotting
@@ -142,7 +147,6 @@ while($row = $result->fetch_array()){
         $siteData[$row['siteID']]['hdata'][]= array((int)$row['year'],(int)($row['breakupDay']));
     }
 }
-
 
 file_put_contents('breakupData.json',json_encode($siteData));
 file_put_contents('cms_publicdata+breakupData.json',json_encode($siteData));
