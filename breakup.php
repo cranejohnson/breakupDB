@@ -81,12 +81,13 @@ $option_tree = array();
 $selectSet = array();
 while($row = $result->fetch_array()){
 
-    $selectSet[$row['id']] = "{$row['region']} - {$row['river']} {$row['atnr']} {$row['location']}";
     if(!isset($numcount[$row['id']])) {
         $numcount[$row['id']] = "0";
         continue;
     }
     #if($numcount[$row['id']]<0) continue;
+    $selectSet[$row['id']] = "{$row['river']} {$row['atnr']} {$row['location']} (n={$numcount[$row['id']]})";
+
     if($row['location']){
         $option_tree[$row['region']][$row['river']][$row['location']."  (".$numcount[$row['id']]." yrs)"] = "{$row['region']} - {$row['river']} {$row['atnr']} {$row['location']} (ID:{$row['id']})";
     }
@@ -114,18 +115,14 @@ foreach($option_tree as $region => $rivers){
 
 
 //Save the menu data to a JSON file
-file_put_contents('cms_publicdata+breakupMenuNew.json',json_encode($selectSet));
 file_put_contents('breakupMenuNew.json',json_encode($selectSet));
 file_put_contents('breakupMenu.json',json_encode($option_tree));
-file_put_contents('cms_publicdata+breakupMenu.json',json_encode($option_tree));
 chmod("breakupMenu.json", 0777);
-chmod("cms_publicdata+breakupMenu.json", 0777);
 chmod("breakupMenuNew.json", 0777);
-chmod("cms_publicdata+breakupMenuNew.json", 0777);
 
 
 //Start working on creating the breakup data JSON file
-$query = "select dayofyear(breakup) as breakupDay,river,atnr,location,firstboat,unsafeman,unsafeveh,lastice,icemoved,remarks,breakup,siteID,year from breakupdata left join breakupSites on breakupdata.siteID = breakupSites.id order by siteID,year";
+$query = "select dayofyear(breakup) as breakupDay,river,atnr,location,firstboat,unsafeman,unsafeveh,lastice,icemoved,remarks,breakup,siteID,year from breakupdata left join breakupSites on breakupdata.siteID = breakupSites.id order by river";
 $result = $mysqli->query($query) or die($mysqli->error);
 while($row = $result->fetch_array()){
 
@@ -149,9 +146,7 @@ while($row = $result->fetch_array()){
 }
 
 file_put_contents('breakupData.json',json_encode($siteData));
-file_put_contents('cms_publicdata+breakupData.json',json_encode($siteData));
 chmod("breakupData.json", 0777);
-chmod("cms_publicdata+breakupData.json", 0777);
 
 
 
