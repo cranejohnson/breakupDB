@@ -46,7 +46,7 @@ $editor->setConfig('perPage', 500);
 $editor->setConfig('allowEdit',true);
 $editor->setConfig('title','APRFC River Breakup Database');
 $editor->setConfig('allowAdd',true);
-$editor->setConfig('allowCopy',false);
+$editor->setConfig('allowCopy',true);
 $editor->setConfig('allowDelete',true);
 $editor->noEdit('datatable','lastUpdate');        	
 $editor->setDefaultOrderby('id', 0);
