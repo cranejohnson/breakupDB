@@ -7,10 +7,8 @@
  * Normally this script will be run daily to generate updated JSON files for
  * web display.
  *
- * It can also be run from a browser to output a table of average breakup dates
- * breakup.php?t&s=1980&e=2016
  *
-
+ *
  * @author Crane Johnson <benjamin.johnson@noaa.gov>
  * @version 0.1
  */
@@ -21,34 +19,12 @@
 
 
 require_once("/usr/local/apps/scripts/bcj/hydroTools/config.inc.php");
-require_once(RESOURCES_DIRECTORY."web_functions.php");
+
 
 //Set the database
 $mysqli->select_db("aprfc");
 
-//Optional arguments for calculating average breakup dates over a range of years
-$opts = getoptreq('s:e:t', array());
 
-if(isset($opts["s"])){
-    $start =  $opts['s'];
-}
-else{
-    $start =  1980;
-}
-
-if(isset($opts["s"])){
-    $end = $opts['e'];
-}
-else{
-    $end = date('Y',time());
-}
-
-if(isset($opts["t"])){
-    $table = true;
-}
-else{
-    $table = false;
-}
 
 function formatDate($date){
 	if($date){
@@ -150,45 +126,6 @@ chmod("breakupData.json", 0777);
 
 
 
-//If an average dates table was requested display this back to the browser.
-if ($table) get_all_avg_dates(1980,$end,$mysqli);
 
-function get_all_avg_dates($from,$to,$mysqli){
-    echo"<h2>Temp Table 1980-2015</h2>";
-    echo "<table border = '1'><tr><td>Name</td><td>Avg Breakup Date</td><td>Count</td><td>".date('Y')."</td></tr>";
-    $query = "SELECT id,region,river,atnr,location FROM breakupSites order by region,river";
-
-    $result = $mysqli->query($query); # or die($mysqli->error);
-    echo $mysqli->error;
-
-    while($row = $result->fetch_array()){
-        $name = $row['river'].' '.$row['atnr'].' '.$row['location'];
-        $query = "select siteid,avg(DATE_FORMAT(breakup,'%j'))+.5 AS jday,count(breakup) as count from breakupdata where siteid = ".$row['id']." and  year >= $from and year <= $to";
-        $resultd = $mysqli->query($query) or die($mysqli->error);
-        $datarow = $resultd->fetch_assoc();
-        if($datarow['jday'] > 0){
-            $date = date('M-d',strtotime('2001-12-31')+$datarow['jday']*24*3600);
-            $query = "select siteid,DATE_FORMAT(breakup,'%j') as jday from breakupdata where siteid = ".$row['id']." and  year = YEAR(CURDATE())";
-            $resultd = $mysqli->query($query) or die($mysqli->error);
-            $data = $resultd->fetch_assoc();
-            if($data['jday']){
-                $currYear = date('M-d',strtotime('2001-12-31')+$data['jday']*24*3600);
-            }
-            else{
-                $currYear = '-';
-            }
-            echo "<tr><td>$name</td><td>$date</td><td>{$datarow['count']}</td><td>$currYear</td></tr>";
-
-            }
-        else{
-            $date = 'N/A';
-        }
-
-
-
-    }
-    echo "</table>";
-
-}
 
 ?>

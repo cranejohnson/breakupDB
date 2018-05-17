@@ -70,7 +70,8 @@ $editor->setDisplayNames(array('forecastStart'       => 'Initial Forecast Start 
                               'forecastEnd'     => 'Initial Forecast End Date',
                               'severity' => 'Impact Based Flood Severity'));
 
-$editor->addDisplayFilter('internalNotes', create_function('$v', 'return str_curtail($v, 20);'));
+#######################Commented out the following function call as it was causing a race condition //rgo 20180503
+#$editor->addDisplayFilter('internalNotes', create_function('$v', 'return str_curtail($v, 20);'));
 
 $editor->display();
 
