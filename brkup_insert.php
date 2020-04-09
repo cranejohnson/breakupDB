@@ -46,7 +46,7 @@ $editor->setConfig('perPage', 500);
 $editor->setConfig('allowEdit',true);
 $editor->setConfig('title','APRFC River Breakup Database');
 $editor->setConfig('allowAdd',true);
-$editor->setConfig('allowCopy',false);
+$editor->setConfig('allowCopy',true);
 $editor->setConfig('allowDelete',true);
 $editor->noEdit('datatable','lastUpdate');        	
 $editor->setDefaultOrderby('id', 0);
@@ -70,7 +70,8 @@ $editor->setDisplayNames(array('forecastStart'       => 'Initial Forecast Start 
                               'forecastEnd'     => 'Initial Forecast End Date',
                               'severity' => 'Impact Based Flood Severity'));
 
-$editor->addDisplayFilter('internalNotes', create_function('$v', 'return str_curtail($v, 20);'));
+#######################Commented out the following function call as it was causing a race condition //rgo 20180503
+#$editor->addDisplayFilter('internalNotes', create_function('$v', 'return str_curtail($v, 20);'));
 
 $editor->display();
 
