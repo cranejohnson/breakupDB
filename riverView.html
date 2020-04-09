@@ -1,5 +1,5 @@
-    <script src="//code.jquery.com/jquery-latest.min.js"></script>
-    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -7,7 +7,7 @@
 
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.js"></script>
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.0/simple_statistics.min.js"></script>
- 
+
 
     <script>
 
@@ -17,7 +17,7 @@
     {
         return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
     }
-    
+
     function getCol(matrix, col){
        var column = [];
        for(var i=0; i<matrix.length; i++){
@@ -111,7 +111,7 @@
             riverData = [];
             siteNames = [];
             compareYear = [];
-            
+
             early[key]= new Array();
             late[key]= new Array();
             siteCount[key] = new Array();
@@ -299,8 +299,8 @@ $(document).keydown(function(e) {
                         if(leapYear(year)){
                             leapAdj = -1;
                             qual = '(leap year)';
-                        }    
-                            
+                        }
+
 						return Highcharts.dateFormat('%b %e', ((this.y-1+leapAdj)*86400*1000))+' '+qual;
 					}
                 }
@@ -333,7 +333,7 @@ Year to Plot: <input type="text" id="studyyear" value="2016"><br>
 <div id="yukonContainer" class='iceGraph' style="height: 400px; margin: auto; width: 600px"></div>
 
 <script>
-    $("#startyear").val(startYear);    
+    $("#startyear").val(startYear);
     $("#endyear").val(endYear);
     $("#studyyear").val(year);
 </script>
