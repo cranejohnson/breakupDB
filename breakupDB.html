@@ -297,6 +297,7 @@
     var xMax = new Date().getFullYear()+10;
     var breakupData = new Array();
     var baseYear = 1980;
+    var statsPlotYear = new Date().getFullYear()+5;
 
 
     function createChart() {
@@ -339,7 +340,7 @@
 
             labels: {
                 formatter: function(){
-                    if(this.value == 2020){
+                    if(this.value == statsPlotYear){
                           return "Stats";
                     }
                     else{
@@ -505,7 +506,7 @@
                 pointWidth: 10,
                 color: 'blue',
                 lineColor: 'black',
-                pointStart: 2020
+                pointStart: statsPlotYear
             }]
         },
         function (chart) { // on complete
